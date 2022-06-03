@@ -83,9 +83,4 @@ const utils = {
         });
     }
 }
-async function test() {
-    const openPorts = await utils.checkOpenPorts('clynet.cf', 0, 5000);
-    console.log(openPorts);
-};
-test();
 module.exports = utils;
