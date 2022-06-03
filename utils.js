@@ -57,7 +57,6 @@ const utils = {
     getCommand: (prefix, message) => {
         return message.split(prefix)[1].split(' ')[0];
     },
-    // Function to check open ports of a given host (IP or domain)
     checkOpenPorts: (host, portRangeStart, portRangeStop) => {
         return new Promise((resolve, reject) => {
             const net = require('net');
