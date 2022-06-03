@@ -1,0 +1,104 @@
+<div class="welcome-screen">
+    <h1 class="welcome-message">Hola, {{user.name}}.</h1>
+    <span class="wave-emoji-animation">👋</span>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<center>
+    <div class="actions">
+        <a href="/dashboard/profile" class="btn btn-primary">
+            <i class="fas fa-user"></i>
+            <span>Perfil</span>
+        </a>
+        <a href="/dashboard/posts" class="btn btn-primary">
+            <i class="fas fa-newspaper"></i>
+            <span>Posts</span>
+        </a>
+        <a href="/dashboard/users" class="btn btn-primary">
+            <i class="fas fa-users"></i>
+            <span>Usuarios</span>
+        </a>
+        <button class="btn btn-danger" id="exit-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Salir</span>
+        </button>
+    </div>
+</center>
+<style id="dashboard-style">
+    .welcome-screen {
+        display: flex;
+        position: absolute;
+        align-items: center;
+        top: 10%;
+        left: 35%;
+        height: 20vh;
+    }
+
+    .welcome-message {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #000;
+    }
+
+    .welcome-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #000;
+    }
+
+    .loading-message {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px #000;
+    }
+
+    .wave-emoji-animation {
+        font-size: 5rem;
+        animation: wave-emoji-animation 1s infinite;
+    }
+
+    @keyframes wave-emoji-animation {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        50% {
+            transform: rotate(10deg);
+        }
+
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    .actions .btn {
+        margin: 1rem;
+    }
+</style>
+<script>
+    $("#exit-btn").click(() => {
+        displayInteractiveModal("Confirmación", "¿Estás seguro de que quieres salir?", {
+            className: "btn btn-danger",
+            text: "Cancelar",
+            onclick: () => {
+                $("#interactive-modal-close").click();
+            }
+        }, {
+            className: "btn btn-success",
+            text: "Confirmar",
+            onclick: () => {
+                $("#interactive-modal-close").click();
+                window.location.href = "/logout";
+            }
+        });
+    })
+</script>

@@ -1,0 +1,102 @@
+<div class="data">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-fw fa-user"></i>
+                            Editar perfil de {{target.name}}
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <img src="{{ target.avatar }}" class="avatar img-circle" alt="avatar"
+                                        id="avatar-field">
+                                    <h6 id="upload-pic-text">Subir foto...</h6>
+                                    <input type="file" class="form-control" id="new-avatar-input">
+                                </div>
+                            </div>
+                            <div class="col-md-9 personal-info">
+                                <h3>Info personal</h3>
+                                <form class="form-horizontal" role="form" action="/dashboard/users/{{target.id}}/edit"
+                                    method="post">
+                                    <div class="form-group">
+                                        <label class="col-lg-3 control-label">Email:</label>
+                                        <div class="col-lg-8">
+                                            <input class="form-control" type="text" value="{{ target.email }}"
+                                                name="email">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 control-label">Username:</label>
+                                        <div class="col-lg-8">
+                                            <input class="form-control" type="text" value="{{ target.username }}"
+                                                name="username">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">Password:</label>
+                                        <div class="col-md-8">
+                                            <input class="form-control" type="password" id="password-field"
+                                                value="{{ target.password }}" name="password">
+                                                <button class="btn btn-default" id="toggle-show-password-btn">
+                                                    <i class="fa fa-eye"></i>
+                                                    Ver contraseña
+                                                </button>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Nombre:</label>
+                                            <div class="col-md-8">
+                                                <input class="form-control" type="text" value="{{ target.name }}"
+                                                    name="name">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Admin</label>
+                                            <div class="col-md-8">
+                                                <input type="checkbox" {{#if target.admin}} checked {{/if}}
+                                                    name="admin">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label"></label>
+                                            <div class="col-md-8">
+                                                <input type="submit" class="btn btn-primary" value="Guardar">
+                                                <span></span>
+                                                <input type="reset" class="btn btn-default" value="Cancelar">
+                                            </div>
+                                        </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+    }
+</style>
+<script>
+    $("#toggle-show-password-btn").click(function (e) {
+        e.preventDefault();
+        let input = $("#password-field");
+        if (input.attr("type") === "password") {
+            input.attr("type", "text");
+            $(this).html("<i class='fa fa-eye-slash'></i> Ocultar contraseña");
+            $("#password-field").focus();
+        } else {
+            input.attr("type", "password");
+            $(this).html("<i class='fa fa-eye'></i> Ver contraseña");
+            $("#password-field").focus();
+        }
+    });
+</script>

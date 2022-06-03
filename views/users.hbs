@@ -1,0 +1,97 @@
+{{#if user.admin}}
+<div class="btn-group" role="group" aria-label="Actions">
+    <button class="btn btn-primary" id="add-user-btn">
+        <i class="fa fa-fw fa-plus"></i>
+        Agregar
+    </button>
+</div>
+{{/if}}
+<div class="container">
+    <input type="text" class="search-input" placeholder="Buscar..." id="search-input" {{#if filter}} value="{{filter}}"
+        {{/if}}>
+    <button class="btn btn-secondary" id="search-submit-btn">
+        <i class="fa fa-fw fa-search"></i>
+        Buscar
+    </button>
+</div>
+{{#each users}}
+<div class="container" id="container-{{this.id}}">
+    <center>
+        <div class="card md-3">
+            <div class="card-header">
+                <h4>{{this.name}}</h4>
+            </div>
+            <div class="card-body">
+                <p>{{this.email}}</p>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group" role="group">
+                    <a href="/dashboard/users/{{this.id}}/profile" class="btn btn-primary">
+                        <i class="fa fa-fw fa-user"></i>
+                        Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </center>
+</div>
+<br>
+{{/each}}
+{{#if user.admin}}
+<script>
+    $("#add-user-btn").click(function () {
+        window.location.href = "/dashboard/users/add";
+    });
+    const userContainers = document.querySelectorAll(".container");
+    userContainers.forEach(container => {
+        if (!container.id.startsWith("container-")) return;
+        $(`#container-${container.id.split("-")[1]} .card-footer .btn-group`).append(`
+        <a href="/dashboard/users/${container.id.split("-")[1]}/edit" class="btn btn-secondary">
+            <i class="fa fa-fw fa-edit"></i>
+            Editar
+        `);
+    });
+</script>
+{{/if}}
+<script>
+    $("#search-submit-btn").click(function () {
+        const searchInput = $("#search-input").val();
+        if (searchInput.length < 1) {
+            displayModal("Error", "El campo de búsqueda debe tener al menos 1 caracter.");
+            return;
+        }
+        const form = document.createElement("form");
+        form.setAttribute("method", "GET");
+        form.setAttribute("action", "/dashboard/users");
+        const input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "filter");
+        input.setAttribute("value", searchInput);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    });
+    $("#search-input").keypress(function (e) {
+        if (e.which == 13) {
+            $("#search-submit-btn").click();
+        }
+    });
+</script>
+<style>
+    #add-user-btn {
+        left: 1200%;
+        right: 1200%;
+    }
+
+    .search-input {
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 20%;
+        font-size: 16px;
+        font-family: 'Open Sans', sans-serif;
+        outline: none;
+        height: 39px;
+    }
+</style>

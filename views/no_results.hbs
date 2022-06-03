@@ -1,0 +1,68 @@
+<div class="no-results">
+    <div class="container">
+        <input type="text" class="search-input" placeholder="Buscar..." id="search-input" {{#if filter}}
+            value="{{filter}}" {{/if}}>
+        <button class="btn btn-secondary" id="search-submit-btn">
+            <i class="fa fa-fw fa-search"></i>
+            Buscar
+        </button>
+    </div>
+    <div class="container">
+        <center>
+            <div class="card md-3">
+                <div class="card-header">
+                    <h4>No se encontraron resultados</h4>
+                </div>
+                <div class="card-body">
+                    <p>Intenta con otra búsqueda</p>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group" role="group">
+                        {{#if user.admin}}
+                        <a href="/dashboard/users/add" class="btn btn-primary">
+                            <i class="fa fa-fw fa-plus"></i>
+                            Agregar
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </center>
+    </div>
+</div>
+<script>
+    $("#search-submit-btn").click(function () {
+        const searchInput = $("#search-input").val();
+        if (searchInput.length < 1) {
+            displayModal("Error", "El campo de búsqueda debe tener al menos 1 caracter.");
+            return;
+        }
+        const form = document.createElement("form");
+        form.setAttribute("method", "GET");
+        form.setAttribute("action", "/dashboard/users");
+        const input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "filter");
+        input.setAttribute("value", searchInput);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    });
+    $("#search-input").keypress(function (e) {
+        if (e.which == 13) {
+            $("#search-submit-btn").click();
+        }
+    });
+</script>
+<style>
+    .search-input {
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 20%;
+        font-size: 16px;
+        font-family: 'Open Sans', sans-serif;
+        outline: none;
+    }
+</style>

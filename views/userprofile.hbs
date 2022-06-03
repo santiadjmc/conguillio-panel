@@ -1,0 +1,100 @@
+<div class="data">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-fw fa-user"></i>
+                            Perfil de {{target.username}}
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <img src="{{ target.avatar }}" class="avatar img-circle" alt="avatar"
+                                        id="avatar-field">
+                                    <div class="btn-group" role="group" aria-label="Actions">
+                                        {{#if user.admin}}
+                                        <button type="button" class="btn btn-danger" id="delete-user-btn">
+                                            <i class="fa fa-fw fa-trash"></i>
+                                            Eliminar
+                                        </button>
+                                        {{/if}}
+                                        <button class="btn btn-secondary" id="send-msg-btn">
+                                            <i class="fa fa-fw fa-envelope"></i>
+                                            Mensaje
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9 personal-info">
+                                <h3>Info personal</h3>
+                                <form class="form-horizontal" role="form">
+                                    <div class="form-group">
+                                        <label class="col-lg-3 control-label">Email:</label>
+                                        <div class="col-lg-8">
+                                            <input class="form-control" type="text" value="{{ target.email }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 control-label">Username:</label>
+                                        <div class="col-lg-8">
+                                            <input class="form-control" type="text" value="{{ target.username }}"
+                                                disabled>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+    }
+</style>
+{{#if user.admin }}
+<script>
+$("#delete-user-btn").click(async function() {
+    displayInteractiveModal("Eliminar usuario", "¿Estás seguro de que quieres eliminar a este usuario?", {
+        className: "btn btn-secondary",
+        text: "Cancelar",
+        onclick: null
+    }, {
+        className: "btn btn-danger",
+        text: "Eliminar",
+        onclick: async () => {
+            const response = await fetch("/api/users/{{target.id}}", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": "User {{ user.id }}"
+                },
+                body: JSON.stringify({
+                    target: Number("{{ target.id }}")
+                })
+            });
+            if (response.status > 399) {
+                displayModal("Error", "No se pudo eliminar al usuario.");
+            }
+            else {
+                window.location.href = "/dashboard/users";
+            }
+        }
+    });
+})
+</script>
+{{/if}}
+<script>
+    $("#send-msg-btn").click(() => {
+        window.location.href = "/dashboard/users/{{target.id}}/messages";
+    });
+</script>

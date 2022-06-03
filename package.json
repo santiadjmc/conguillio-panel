@@ -1,0 +1,40 @@
+{
+  "name": "conguillio-panel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "clear && sudo /home/unknownuser/.nvm/versions/node/v16.15.0/bin/node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/connect-flash": "^0.0.37",
+    "@types/mysql": "^2.15.21",
+    "@types/passport": "^1.0.7",
+    "@types/passport-local": "^1.0.34",
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-handlebars": "^6.0.6",
+    "express-mysql-session": "^2.1.8",
+    "express-session": "^1.17.3",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "socket.io": "^4.5.1",
+    "ws": "^8.6.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.36",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  }
+}

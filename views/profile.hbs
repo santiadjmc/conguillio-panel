@@ -1,0 +1,74 @@
+<div class="data">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-fw fa-user"></i>
+                            Perfil
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <img src="{{ user.avatar }}" class="avatar img-circle" alt="avatar"
+                                        id="avatar-field">
+                                    <h6 id="upload-pic-text">Subir foto...</h6>
+                                    <input type="file" class="form-control" id="new-avatar-input">
+                                </div>
+                            </div>
+                            <div class="col-md-9 personal-info">
+                                <h3>Info personal</h3>
+                                <form class="form-horizontal" role="form">
+                                    <div class="form-group">
+                                        <label class="col-lg-3 control-label">Email:</label>
+                                        <div class="col-lg-8">
+                                            <input class="form-control" type="text" value="{{ user.email }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-3 control-label">Username:</label>
+                                        <div class="col-lg-8">
+                                            <input class="form-control" type="text" value="{{ user.username }}"
+                                                disabled>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#new-avatar-input").change(async (e) => {
+        const file = await convertFileToBuffer(document.getElementById("new-avatar-input"));
+        ws.sendData("change-avatar", ["{{user.id}}", file.base64, document.getElementById("new-avatar-input").files[0].name]);
+        $("#upload-pic-text").text("Cargando...");
+        ws.onmessage = message => {
+            const data = JSON.parse(message.data);
+            const { event, args } = data;
+            if (event === "change-avatar-response") {
+                if (args[0] === "SUCCESS") {
+                    document.getElementById("avatar-field").src = args[1];
+                    displayModal("success", "Avatar cambiado correctamente.");
+                } else {
+                    displayModal("Error", "Error al cambiar el avatar.");
+                }
+                ws.onmessage = ws.defaultOnMessage;
+                $("#upload-pic-text").text("Subir foto...");
+            }
+        }
+    });
+</script>
+<style>
+    .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+</style>
