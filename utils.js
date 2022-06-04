@@ -83,6 +83,19 @@ const utils = {
                 resolve(openPorts);
             }, 1500);
         });
+    },
+    getRandomInt: (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    getServerPing: () => {
+        return new Promise((resolve, reject) => {
+            const http = require('http');
+            const startOfRequest = Date.now();
+            http.get('localhost', (res) => {
+                const endOfRequest = Date.now();
+                resolve(endOfRequest - startOfRequest);
+            });
+        });
     }
 };
 module.exports = utils;
