@@ -33,7 +33,7 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('common', {
-    skip: (req, res) => RateLimit.ratelimited.has(req.ip.replace(/::ffff:/, ''))
+    skip: (req, res) => RateLimit.ratelimited.has(req.ip?.replace(/::ffff:/, ''))
 }));
 app.use(passport.initialize());
 app.use(passport.session());
