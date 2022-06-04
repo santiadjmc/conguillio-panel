@@ -18,7 +18,7 @@ const fs = require("fs");
 const SocketIO = require("socket.io");
 const WebSocketsManager = require("./managers/WebSocketsManager");
 const RateLimitManager = require("./managers/RateLimitManager");
-const RateLimit = new RateLimitManager();
+const RateLimit = new RateLimitManager(100);
 function genRandomString(length) {
     return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1); s
 }
@@ -207,7 +207,7 @@ io.on("connection", async socket => {
 
 // RateLimit Events
 RateLimit.on("ratelimit", (ip) => {
-    Log.warn(`server`, `${ip} has been ratelimited`);
+    Log.info(`server`, `IP ${ip} has been ratelimited`);
 });
 
 // Checks
