@@ -108,8 +108,9 @@ router.post("/dashboard/users/:id/edit", onlyAuth, async (req, res, next) => {
         return next();
     }
     const { username, password, email, name } = req.body;
+    let encryptedPass = utils.encryptWithAES(data.server.encryptionKey, password);
     let admin = req.body.admin === "on";
-    await db.query(`UPDATE users SET ? WHERE id = ?`, [{ username, password, email, admin, name }, id]);
+    await db.query(`UPDATE users SET ? WHERE id = ?`, [{ username, email, password: encryptedPass, admin, name }, id]);
     req.flash("success", "Usuario editado correctamente.");
     res.redirect(`/dashboard/users/`);
 });
