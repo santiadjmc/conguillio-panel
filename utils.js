@@ -61,6 +61,7 @@ const utils = {
         return new Promise((resolve, reject) => {
             const net = require('net');
             const openPorts = [];
+            const startOfFor = Date.now();
             for (let i = portRangeStart; i <= portRangeStop; i++) {
                 const socket = new net.Socket();
                 socket.setTimeout(1000);
@@ -76,10 +77,12 @@ const utils = {
                 });
                 socket.connect(i, host);
             }
+            const endOfFor = Date.now();
+            console.log(`[!] Checking open ports took ${endOfFor - startOfFor}ms (${(endOfFor - startOfFor) / 1000}s)`);
             setTimeout(() => {
                 resolve(openPorts);
-            }, 2500);
+            }, 1500);
         });
     }
-}
+};
 module.exports = utils;
