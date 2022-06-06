@@ -144,6 +144,10 @@
             });
         }
     </script>
+    <script src="/js/utils.js"></script>
+    <script>
+        utils.askForNotificationPermission();
+    </script>
     <script src="/js/WebSocketManager.js"></script>
     <script>
         ws.sendData("set-user-id", ["{{user.id}}"]);
