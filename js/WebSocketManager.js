@@ -70,4 +70,4 @@ class WebSocketManager extends WebSocket {
         return this.readyState == WebSocket.OPEN;
     }
 }
-const ws = new WebSocketManager("ws://186.78.122.149/");
+const ws = new WebSocketManager(`ws://${location.host}/`);
