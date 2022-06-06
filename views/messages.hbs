@@ -154,7 +154,7 @@
         window.scrollBy(0, 230);
         if (!utils.windowFocused()) {
             unreadMessages++;
-            utils.changeTitle(`[${unreadMessages < 10 ? unreadMessages : '+9'}] {{target.username}}`);
+            utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
             utils.displayNotification(`{{target.username}}`, `${data.content}`);
             utils.playSound("/audio/new_message.mp3");
         }
