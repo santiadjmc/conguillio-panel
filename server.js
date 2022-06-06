@@ -63,6 +63,7 @@ app.engine('.hbs', hbs.engine({
 app.use("/js", express.static(path.join(__dirname, 'js')));
 app.use("/css", express.static(path.join(__dirname, 'css')));
 app.use("/img", express.static(path.join(__dirname, 'img')));
+app.use("/audio", express.static(path.join(__dirname, 'audio')));
 app.use("/", RateLimit.ratelimit, require('./routers/main'));
 app.use("/api", require('./routers/api'));
 app.use("/api", async (req, res, next) => {
