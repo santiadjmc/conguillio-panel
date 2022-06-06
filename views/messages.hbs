@@ -35,6 +35,7 @@
     <i class="fas fa-arrow-down"></i>
 </div>
 <script>
+    let unreadMessages = 0;
     let userStatus = "{{target.status}}"
     function removeXSS(str) {
         return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
@@ -151,6 +152,17 @@
             </div>
         `);
         window.scrollBy(0, 230);
+        if (!utils.windowFocused()) {
+            unreadMessages++;
+            utils.changeTitle(`[${unreadMessages < 10 ? unreadMessages : '+9'}] {{target.username}}`);
+            utils.displayNotification(`{{target.username}}`, `${data.content}`);
+            utils.playSound("/audio/new_message.mp3");
+        }
+    });
+    window.addEventListener("focus", () => {
+        unreadMessages = 0;
+        utils.changeTitle(`{{target.username}}`);
+        $(".chat-input-text").focus();
     });
     socket.on("typing", function (data) {
         if (!data.isTyping) {
@@ -326,12 +338,15 @@
         right: 0;
         z-index: 1;
     }
+
     .offline-status {
         color: #ff0000;
     }
+
     .online-status {
         color: #00ff00;
     }
+
     .typing-status {
         color: #363535;
     }
