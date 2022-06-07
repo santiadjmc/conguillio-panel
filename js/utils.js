@@ -46,5 +46,15 @@ const utils = {
         audio.onended = () => {
             audio.remove();
         }
+        audio.onerror = () => {
+            audio.remove();
+            displayInteractiveModal("Error", "An error occurred while trying to play the sound, if the error persists, contact an administrator.", {
+                className: "btn btn-secondary",
+                text: "Reload",
+                onclick: () => {
+                    window.location.reload();
+                }
+            });
+        }
     }
 }
