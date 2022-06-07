@@ -17,6 +17,16 @@ const utils = {
                 window.focus();
                 notification.close();
             }
+            notification.onerror = () => {
+                notification.close();
+                displayInteractiveModal("Error", "An error occurred while trying to display the notification, if the error persists, contact an administrator.", {
+                    className: "btn btn-secondary",
+                    text: "Reload",
+                    onclick: () => {
+                        window.location.reload();
+                    }
+                });
+            }
         }
     },
     askForNotificationPermission: () => {
