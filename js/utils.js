@@ -12,6 +12,7 @@ const utils = {
         if (Notification.permission === "granted") {
             const notification = new Notification(title, {
                 body,
+                icon: "/img/notification_icon.png"
             });
             notification.onclick = onclick || function () {
                 window.focus();
