@@ -1,11 +1,3 @@
-{{#if user.admin}}
-<div class="btn-group" role="group" aria-label="Actions">
-    <button class="btn btn-primary" id="add-user-btn">
-        <i class="fa fa-fw fa-plus"></i>
-        Agregar
-    </button>
-</div>
-{{/if}}
 <div class="container">
     <input type="text" class="search-input" placeholder="Buscar..." id="search-input" {{#if filter}} value="{{filter}}"
         {{/if}}>
@@ -13,6 +5,12 @@
         <i class="fa fa-fw fa-search"></i>
         Buscar
     </button>
+    {{#if user.admin}}
+    <button class="btn btn-primary" id="add-user-btn">
+        <i class="fa fa-fw fa-plus"></i>
+        Agregar
+    </button>
+    {{/if}}
 </div>
 {{#each users}}
 <div class="container" id="container-{{this.id}}">
@@ -78,11 +76,6 @@
     });
 </script>
 <style>
-    #add-user-btn {
-        left: 1000%;
-        right: 1000%;
-    }
-
     .search-input {
         margin-bottom: 20px;
         border-radius: 5px;
