@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "clear && sudo /home/unknownuser/.nvm/versions/node/v16.15.0/bin/node server.js"
+    "start": "clear && sudo /home/unknown/.nvm/versions/node/v16.15.1/bin/node server.js"
   },
   "keywords": [],
   "author": "",
