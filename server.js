@@ -171,7 +171,7 @@ io.on("connection", async socket => {
                     user
                 });
             }
-        }, 3000);
+        }, 2000);
     });
     socket.on("set-id", async id => {
         socket.userid = id;
