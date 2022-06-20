@@ -171,7 +171,7 @@ io.on("connection", async socket => {
                     user
                 });
             }
-        }, 2000);
+        }, 3000);
     });
     socket.on("set-id", async id => {
         socket.userid = id;
@@ -209,6 +209,9 @@ io.on("connection", async socket => {
 // RateLimit Events
 RateLimit.on("ratelimit", (ip) => {
     Log.info(`server`, `IP ${ip} has been ratelimited`);
+});
+RateLimit.on("removed-ratelimit", (ip) => {
+    Log.info(`server`, `IP ${ip} has been removed from ratelimit`);
 });
 
 // Checks
