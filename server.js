@@ -20,7 +20,12 @@ const WebSocketsManager = require("./managers/WebSocketsManager");
 const RateLimitManager = require("./managers/RateLimitManager");
 const RateLimit = new RateLimitManager(100);
 function genRandomString(length) {
-    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+    const chars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
 }
 
 // Middlewares
