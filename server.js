@@ -20,7 +20,7 @@ const WebSocketsManager = require("./managers/WebSocketsManager");
 const RateLimitManager = require("./managers/RateLimitManager");
 const RateLimit = new RateLimitManager(100);
 function genRandomString(length) {
-    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1); s
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
 }
 
 // Middlewares
