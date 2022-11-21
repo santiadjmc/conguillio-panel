@@ -26,6 +26,9 @@
         <button type="button" class="chat-input-button">
             <i class="fas fa-paper-plane"></i>
         </button>
+        <button type="button" class="ai-input-button">
+            <i class="fas fa-robot"></i>
+        </button>
     </div>
 </div>
 <div id="back-to-top">
@@ -35,6 +38,7 @@
     <i class="fas fa-arrow-down"></i>
 </div>
 <script>
+    let ai_status = false;
     let unreadMessages = 0;
     let userStatus = "{{target.status}}"
     function removeXSS(str) {
@@ -131,6 +135,13 @@
                 user: '{{user.id}}'
             });
             console.log("WebSocketManager: Message sent to server through socket.");
+            if (ai_status) {
+                socket.emit("ai", {
+                    content: removeXSS(text),
+                    target: '{{target.id}}',
+                    user: '{{user.id}}'
+                });
+            }
         }
         else {
             displayModal("Error", "Cannot send an empty message");
@@ -155,8 +166,20 @@
         if (!utils.windowFocused()) {
             unreadMessages++;
             utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
-            utils.displayNotification(`{{target.username}}`, `${data.content}`);
+            utils.displayNotification(`{{target.username}}`, `${data.content}`, null, data.user.avatar);
             utils.playSound("/audio/new_message.mp3");
+        }
+    });
+    $(".ai-input-button").click(function () {
+        if (ai_status) {
+            document.querySelector(".ai-input-button-on").className = "ai-input-button";
+            ai_status = false;
+            displayModal("Sucess", "La IA ha sido desactivada.");
+        }
+        else {
+            document.querySelector(".ai-input-button").className = "ai-input-button-on";
+            ai_status = true;
+            displayModal("Sucess", "La IA ha sido activada.");
         }
     });
     window.addEventListener("focus", () => {
@@ -313,6 +336,19 @@
     }
 
     .chat-input-button:hover {
+        background-color: #e5e5e5;
+    }
+
+    .ai-input-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        border: none;
+        outline: none;
+    }
+
+    .ai-input-button:hover {
         background-color: #e5e5e5;
     }
 

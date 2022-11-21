@@ -8,11 +8,11 @@ const utils = {
     currentPath: () => {
         return window.location.pathname;
     },
-    displayNotification: (title, body, onclick) => {
+    displayNotification: (title, body, onclick, avatar) => {
         if (Notification.permission === "granted") {
             const notification = new Notification(title, {
                 body,
-                icon: "/img/notification_icon.png"
+                icon: avatar || "/img/notification_icon.png"
             });
             notification.onclick = onclick || function () {
                 window.focus();
@@ -35,6 +35,9 @@ const utils = {
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
                 utils.displayNotification("Permission granted", "You can now receive notifications");
+            }
+            else {
+                displayModal("Error", "Notifications permission rejected");
             }
         });
     },

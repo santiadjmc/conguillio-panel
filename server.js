@@ -96,7 +96,7 @@ wss.on("change-avatar", async (args, ws) => {
         return;
     }
     const gentString = genRandomString(15);
-    fs.writeFileSync(`./img/avatars/${gentString}.${utils.getExtname(name)}`, base64, "base64");
+    fs.writeFileSync(`./img/avatars/${gentString}.${utils.getExtname(name ?? "file.webp")}`, base64, "base64");
     await db.query(`UPDATE users SET avatar = ? WHERE id = ?`, [`/img/avatars/${gentString}.${utils.getExtname(name)}`, userid]);
     wss.send("change-avatar-response", ["SUCCESS", `/img/avatars/${gentString}.${utils.getExtname(name)}`], ws);
 });
@@ -202,6 +202,38 @@ io.on("connection", async socket => {
         targetSocket.emit("typing", {
             isTyping: content !== "" && content !== " ",
             user: user[0],
+        });
+    });
+    socket.on("ai", async data => {
+        socket.emit("typing", {
+            isTyping: true,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/default_avatar.png"
+            }
+        });
+        const aiResponse = await fetch(`${process.env.AI_API_ENDPOINT}/get?bid=${process.env.AI_API_BID}&key=${process.env.AI_API_KEY}&msg=${encodeURI(data.content)}&uid=${socket.userid}`);
+        const response = await aiResponse.json();
+        socket.emit("message", {
+            currentChat: true,
+            content: response.cnt,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/default_avatar.png"
+            }
+        });
+        let targetSocket = null;
+        io.sockets.sockets.forEach(s => {
+            if (s.userid === socket.chat) {
+                targetSocket = s;
+            }
+        });
+        socket.emit("typing", {
+            isTyping: false,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/default_avatar.png"
+            }
         });
     });
 });
