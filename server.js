@@ -18,6 +18,7 @@ const fs = require("fs");
 const SocketIO = require("socket.io");
 const WebSocketsManager = require("./managers/WebSocketsManager");
 const RateLimitManager = require("./managers/RateLimitManager");
+const { default: fetch } = require("node-fetch");
 const RateLimit = new RateLimitManager(100);
 function genRandomString(length) {
     const chars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
@@ -86,6 +87,15 @@ app.use("*", (req, res, next) => {
 // Server
 const server = app.listen(app.get('port'), () => {
     Log.success(`server`, `Server started on port ${app.get('port')}`);
+    setInterval(async () => {
+        const svPing = await utils.getServerPing();
+        if (svPing > 99) {
+            Log.warn('server', `The server ping is over 99 [${svPing} ms]`);
+        }
+        else {
+            Log.info("server", `The server ping is ${svPing} ms`);
+        }
+    }, 60000);
 });
 const wss = new WebSocketsManager(server);
 

@@ -12,7 +12,7 @@ const utils = {
         if (Notification.permission === "granted") {
             const notification = new Notification(title, {
                 body,
-                icon: avatar || "/img/notification_icon.png"
+                icon: avatar || "/img/notification_icon.png",
             });
             notification.onclick = onclick || function () {
                 window.focus();
@@ -37,7 +37,7 @@ const utils = {
                 utils.displayNotification("Permission granted", "You can now receive notifications");
             }
             else {
-                displayModal("Error", "Notifications permission rejected");
+                console.log("Debug: Notifications were rejected by the user or by the user's browser.")
             }
         });
     },
@@ -52,7 +52,7 @@ const utils = {
         }
         audio.onerror = () => {
             audio.remove();
-            displayInteractiveModal("Error", "An error occurred while trying to play the sound, if the error persists, contact an administrator.", {
+            displayInteractiveModal("Error", "An error occurred while trying to play the audio, if the error persists, contact an administrator.", {
                 className: "btn btn-secondary",
                 text: "Reload",
                 onclick: () => {
