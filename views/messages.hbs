@@ -40,7 +40,8 @@
 <script>
     let ai_status = false;
     let unreadMessages = 0;
-    let userStatus = "{{target.status}}"
+    let userStatus = "{{target.status}}";
+    let ai_msg_id = 0;
     function removeXSS(str) {
         return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
     }
@@ -150,9 +151,10 @@
     $(".user-data").click(function () {
         $(".chat-input-text").focus();
     });
-    socket.on("message", function (data) {
+    socket.on("message", async function (data) {
         console.log("WebSocketManager: Message received from server.");
-        $(".chat-messages").append(`
+        if (data.user.username !== "BarnieBot") {
+            $(".chat-messages").append(`
             <div class="chat-message">
                 <div class="chat-message-text">
                     <p class="chat-message-text-paragraph">
@@ -162,12 +164,38 @@
                 </div>
             </div>
         `);
-        window.scrollBy(0, 230);
-        if (!utils.windowFocused()) {
-            unreadMessages++;
-            utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
-            utils.displayNotification(`{{target.username}}`, `${data.content}`, null, data.user.avatar);
-            utils.playSound("/audio/new_message.mp3");
+        }
+        else {
+            $(".chat-messages").append(`
+            <div class="chat-message">
+                <div class="chat-message-text">
+                    <p class="chat-message-text-paragraph" id="ai-${ai_msg_id}">
+                        <img class="chat-message-text-avatar" src="${data.user.avatar}" alt="${data.user.username}">
+                        <b>${data.user.username}</b>:
+                    </p>
+                </div>
+            </div>
+        `);
+            await (() => {
+                return new Promise((resolve, reject) => {
+                    for (const char of data.content) {
+                        setTimeout(() => {
+                            $(`#ai-${ai_msg_id}`).append(char);
+                            if (char === data.content[data.content.length - 1]) {
+                                resolve();
+                            }
+                        }, 800);
+                    }
+                });
+            })();
+            ai_msg_id++;
+            window.scrollBy(0, 230);
+            if (!utils.windowFocused()) {
+                unreadMessages++;
+                utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
+                utils.displayNotification(`{{target.username}}`, `${data.content}`, null, data.user.avatar);
+                utils.playSound("/audio/new_message.mp3");
+            }
         }
     });
     $(".ai-input-button").click(function () {

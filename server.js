@@ -46,7 +46,7 @@ app.use(passport.session());
 app.use(flash());
 
 // Settings
-app.set('port', data.server.port);
+app.set('port', 8080);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.hbs');
 
@@ -83,7 +83,6 @@ app.use("*", (req, res, next) => {
         title: "404 - Not found"
     })
 });
-
 // Server
 const server = app.listen(app.get('port'), () => {
     Log.success(`server`, `Server started on port ${app.get('port')}`);
@@ -97,7 +96,7 @@ const server = app.listen(app.get('port'), () => {
         }
     }, 60000);
 });
-const wss = new WebSocketsManager(server);
+const wss = new WebSocketsManager(8081);
 
 // WebSockets
 wss.on("change-avatar", async (args, ws) => {
@@ -186,7 +185,7 @@ io.on("connection", async socket => {
                     user
                 });
             }
-        }, 2000);
+        }, 3000);
     });
     socket.on("set-id", async id => {
         socket.userid = id;
@@ -220,23 +219,6 @@ io.on("connection", async socket => {
         });
     });
     socket.on("ai", async data => {
-        socket.emit("typing", {
-            isTyping: true,
-            user: {
-                username: "BarnieBot",
-                avatar: "/img/default_avatar.png"
-            }
-        });
-        const aiResponse = await fetch(`${process.env.AI_API_ENDPOINT}/get?bid=${process.env.AI_API_BID}&key=${process.env.AI_API_KEY}&msg=${encodeURI(data.content)}&uid=${socket.userid}`);
-        const response = await aiResponse.json();
-        socket.emit("message", {
-            currentChat: true,
-            content: response.cnt,
-            user: {
-                username: "BarnieBot",
-                avatar: "/img/default_avatar.png"
-            }
-        });
         let targetSocket = null;
         io.sockets.sockets.forEach(s => {
             if (s.userid === socket.chat) {
@@ -244,10 +226,66 @@ io.on("connection", async socket => {
             }
         });
         socket.emit("typing", {
+            isTyping: true,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/barnie_avatar.png",
+                id: 0
+            }
+        });
+        targetSocket?.emit("typing", {
+            isTyping: true,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/barnie_avatar.png",
+                id: 0
+            }
+        });
+        const aiResponse = await fetch(`${process.env.AI_API_ENDPOINT}/get?bid=${process.env.AI_API_BID}&key=${process.env.AI_API_KEY}&msg=${encodeURI(data.content)}&uid=${socket.userid}`);
+        const response = await aiResponse.json();
+        await fetch(`http://localhost:${app.get('port')}/api/users/${socket.chat}/messages`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "User " + socket.userid
+            },
+            body: JSON.stringify({ content: response.cnt, bot: true })
+        });
+        socket.emit("message", {
+            currentChat: true,
+            content: response.cnt,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/barnie_avatar.png",
+                name: "BarnieBot"
+
+            }
+        });
+        if (targetSocket && targetSocket?.chat === socket.userid) {
+            targetSocket?.emit("message", {
+                currentChat: true,
+                content: response.cnt,
+                user: {
+                    username: "BarnieBot",
+                    avatar: "/img/barnie_avatar.png",
+                    name: "BarnieBot"
+
+                }
+            });
+        }
+        socket.emit("typing", {
             isTyping: false,
             user: {
                 username: "BarnieBot",
-                avatar: "/img/default_avatar.png"
+                avatar: "/img/barnie_avatar.png"
+            }
+        });
+        targetSocket?.emit("typing", {
+            isTyping: false,
+            user: {
+                username: "BarnieBot",
+                avatar: "/img/barnie_avatar.png",
+                id: 0
             }
         });
     });

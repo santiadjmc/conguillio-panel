@@ -86,7 +86,7 @@ router.post("/users/new", restricted, async (req, res) => {
 
 router.post("/users/:id/messages", restricted, async (req, res, next) => {
     const id = req.params.id;
-    const userRequesting = await db.query(`SELECT * FROM users WHERE id = ?`, [req.user.id ?? req.headers.authorization.split(' ')[1]]);
+    const userRequesting = req.body.bot ?  [{ id: 0 }] : await db.query(`SELECT * FROM users WHERE id = ?`, [req.user.id ?? req.headers.authorization.split(' ')[1]]);
     const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
     if (!user[0]) {
         return next();

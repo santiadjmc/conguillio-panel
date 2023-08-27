@@ -3,5 +3,5 @@ socket.on("message", async data => {
     utils.displayNotification(data.user.username, data.content, () => {
         window.focus();
         location.href = `/dashboard/users/${data.user.id}/messages`;
-    });
+    }, data.user.avatar);
 });

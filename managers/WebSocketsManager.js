@@ -2,12 +2,12 @@ const { EventEmitter } = require('events');
 const { WebSocketServer } = require('ws');
 const utils = require('../utils');
 class WebSocketsManager extends EventEmitter {
-    constructor(sv) {
+    constructor(port) {
         super();
         /**
          * @type {WebSocketServer}
          */
-        this.server = new WebSocketServer({ server: sv });
+        this.server = new WebSocketServer({ port });
         this.server.on('connection', (ws) => {
             ws.onmessage = message => {
                 if (!utils.isJSON(message.data)) return;

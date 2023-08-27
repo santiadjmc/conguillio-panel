@@ -2,9 +2,9 @@
   "name": "conguillio-panel",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "clear && sudo /home/unknownuser/.nvm/versions/node/v18.12.1/bin/node server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",

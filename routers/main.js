@@ -121,13 +121,19 @@ router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => 
     if (!user[0]) {
         return next();
     }
-    const messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = ?`, [id, req.user.id, req.user.id, id]);
+    const messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = ? OR target_id = ? AND user_id = 0 OR target_id = ? AND user_id = 0`, [id, req.user.id, req.user.id, id, id, req.user.id]);
     messages.forEach(msg => {
         if (msg.user_id === req.user.id) {
             msg.isOwn = true;
             msg.username = req.user.username;
             msg.avatar = req.user.avatar;
             msg.name = req.user.name;
+        }
+        else if (msg.user_id === 0) {
+            msg.isOwn = false;
+            msg.username = "BarnieBot";
+            msg.avatar = "/img/barnie_avatar.png";
+            msg.name = "BarnieBot";
         }
         else {
             msg.isOwn = false;
