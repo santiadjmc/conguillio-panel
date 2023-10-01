@@ -178,14 +178,16 @@
         `);
             await (() => {
                 return new Promise((resolve, reject) => {
-                    for (const char of data.content) {
-                        setTimeout(() => {
-                            $(`#ai-${ai_msg_id}`).append(char);
-                            if (char === data.content[data.content.length - 1]) {
-                                resolve();
-                            }
-                        }, 800);
-                    }
+                    let currentIndex = 0;
+                    setInterval(() => {
+                        if (currentIndex === data.content.length) {
+                            resolve();
+                        }
+                        else {
+                            $(`#ai-${ai_msg_id}`).append(data.content[currentIndex]);
+                            currentIndex += 1;
+                        }
+                    }, 65);
                 });
             })();
             ai_msg_id++;
