@@ -3,3 +3,4 @@ package-lock.json
 img/avatars
 audio/
 .vscode/
+node_modules/
