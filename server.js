@@ -46,7 +46,7 @@ app.use(passport.session());
 app.use(flash());
 
 // Settings
-app.set('port', 8080);
+app.set('port', data.server.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '.hbs');
 
