@@ -87,11 +87,11 @@ const utils = {
     getRandomInt: (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
-    getServerPing: () => {
+    getServerPing: (port) => {
         return new Promise((resolve, reject) => {
             const http = require('http');
             const startOfRequest = Date.now();
-            http.get('http://127.0.0.1:8080/', (res) => {
+            http.get(`http://127.0.0.1:/:${port}`, (res) => {
                 const endOfRequest = Date.now();
                 resolve(endOfRequest - startOfRequest);
             });

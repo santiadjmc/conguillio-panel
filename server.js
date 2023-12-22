@@ -56,7 +56,7 @@ app.use(async (req, res, next) => {
     res.locals.error = req.flash("error");
     res.locals.success = req.flash("success");
     next();
-})
+});
 
 // Engine
 app.engine('.hbs', hbs.engine({
@@ -87,7 +87,7 @@ app.use("*", (req, res, next) => {
 const server = app.listen(app.get('port'), () => {
     Log.success(`server`, `Server started on port ${app.get('port')}`);
     setInterval(async () => {
-        const svPing = await utils.getServerPing();
+        const svPing = await utils.getServerPing(data.server.port);
         if (svPing > 99) {
             Log.warn('server', `The server ping is over 99 [${svPing} ms]`);
         }
