@@ -42,6 +42,7 @@
     let unreadMessages = 0;
     let userStatus = "{{target.status}}";
     let ai_msg_id = 0;
+    let focused = true;
     function removeXSS(str) {
         return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
     }
@@ -191,13 +192,13 @@
                 });
             })();
             ai_msg_id++;
-            window.scrollBy(0, 230);
-            if (!utils.windowFocused()) {
-                unreadMessages++;
-                utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
-                utils.displayNotification(`{{target.username}}`, `${data.content}`, null, data.user.avatar);
-                utils.playSound("/audio/new_message.mp3");
-            }
+        }
+        window.scrollBy(0, 230);
+        if (!utils.windowFocused() || !focused) {
+            unreadMessages++;
+            utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
+            utils.displayNotification(`{{target.username}}`, `${data.content}`, null, data.user.avatar);
+            utils.playSound("/audio/new_message.mp3");
         }
     });
     $(".ai-input-button").click(function () {
@@ -216,7 +217,9 @@
         unreadMessages = 0;
         utils.changeTitle(`{{target.username}}`);
         $(".chat-input-text").focus();
+        focused = true;
     });
+    window.addEventListener("focusout", () => { focused = false; });
     socket.on("typing", function (data) {
         if (!data.isTyping) {
             $("#typing").remove();
