@@ -13,7 +13,7 @@
         <div class="chat-message {{#if this.isOwn}}own{{/if}}">
             <div class="chat-message-text">
                 <p class="chat-message-text-paragraph">
-                    <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}">
+                    <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}" onclick="location.replace("/")">
                     <b>{{this.username}}</b>: {{this.content}}
                 </p>
             </div>
@@ -26,9 +26,10 @@
         <button type="button" class="chat-input-button">
             <i class="fas fa-paper-plane"></i>
         </button>
-        <button type="button" class="ai-input-button">
-            <i class="fas fa-robot"></i>
-        </button>
+        <label class="switch">
+            <input type="checkbox" class="chk" id="ai-input-btn">
+            <span class="slider"></span>
+        </label>
     </div>
 </div>
 <div id="back-to-top">
@@ -42,15 +43,17 @@
     let unreadMessages = 0;
     let userStatus = "{{target.status}}";
     let ai_msg_id = 0;
-    let focused = true;
+    let gotTyping = false;
     function removeXSS(str) {
         return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
     }
     $(window).scroll(function () {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();
+            $('#back-to-bottom').fadeOut();
         } else {
             $('#back-to-top').fadeOut();
+            $('#back-to-bottom').fadeIn();
         }
     });
     $('#back-to-top').click(function () {
@@ -59,13 +62,13 @@
         }, 500);
         return false;
     });
-    $(window).scroll(function () {
+    /*$(window).scroll(function () {
         if ($(this).scrollTop() < 50) {
-            $('#back-to-bottom').fadeOut();
-        } else {
             $('#back-to-bottom').fadeIn();
+        } else {
+            $('#back-to-bottom').fadeOut();
         }
-    });
+    }); */
     $('#back-to-bottom').click(function () {
         $('body,html').animate({
             scrollTop: $(document).height()
@@ -194,35 +197,34 @@
             ai_msg_id++;
         }
         window.scrollBy(0, 230);
-        if (!utils.windowFocused() || !focused) {
+        if (!utils.windowFocused()) {
             unreadMessages++;
             utils.changeTitle(`(${unreadMessages < 10 ? unreadMessages : '+9'}) {{target.username}}`);
             utils.displayNotification(`{{target.username}}`, `${data.content}`, null, data.user.avatar);
             utils.playSound("/audio/new_message.mp3");
         }
     });
-    $(".ai-input-button").click(function () {
+    $("#ai-input-btn").change(function () {
         if (ai_status) {
-            document.querySelector(".ai-input-button-on").className = "ai-input-button";
             ai_status = false;
             displayModal("Sucess", "La IA ha sido desactivada.");
         }
         else {
-            document.querySelector(".ai-input-button").className = "ai-input-button-on";
             ai_status = true;
             displayModal("Sucess", "La IA ha sido activada.");
         }
     });
     window.addEventListener("focus", () => {
+        const lastUnread = unreadMessages;
         unreadMessages = 0;
         utils.changeTitle(`{{target.username}}`);
-        $(".chat-input-text").focus();
+        if (lastUnread > 0) $(".chat-input-text").focus();
         focused = true;
     });
-    window.addEventListener("focusout", () => { focused = false; });
     socket.on("typing", function (data) {
         if (!data.isTyping) {
             $("#typing").remove();
+            gotTyping = false;
             return;
         }
         if ($("#typing").length > 0) {
@@ -238,7 +240,8 @@
                 </div>
             </div>
         `);
-        window.scrollBy(0, 230);
+        if (!gotTyping) window.scrollBy(0, 230);
+        if (!gotTyping) gotTyping = true;
     });
     socket.on("check-input", () => {
         socket.emit("check-input-response", {
@@ -372,19 +375,6 @@
         background-color: #e5e5e5;
     }
 
-    .ai-input-button {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #f5f5f5;
-        border: none;
-        outline: none;
-    }
-
-    .ai-input-button:hover {
-        background-color: #e5e5e5;
-    }
-
     .chat-message-text-avatar {
         width: 40px;
         height: 40px;
@@ -418,5 +408,88 @@
 
     .typing-status {
         color: #363535;
+    }
+
+    /* The switch - the box around the slider */
+    .switch {
+        font-size: 17px;
+        position: relative;
+        display: inline-block;
+        width: 1.2em;
+        height: 3.3em;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch .chk {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 5px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: .5em;
+        width: 2.4em;
+        border-radius: 5px;
+        left: -0.6em;
+        top: 0.2em;
+        background-color: white;
+        box-shadow: 0 6px 7px rgba(0, 0, 0, 0.3);
+        transition: .4s;
+    }
+
+    .slider:before,
+    .slider:after {
+        content: "";
+        display: block;
+    }
+
+    .slider:after {
+        background: linear-gradient(transparent 50%, rgba(255, 255, 255, 0.15) 0) 0 50% / 50% 100%,
+            repeating-linear-gradient(90deg, rgb(255, 255, 255) 0, rgb(255, 255, 255), rgb(255, 255, 255) 20%, rgb(255, 255, 255) 20%, rgb(255, 255, 255) 40%) 0 50% / 50% 100%,
+            radial-gradient(circle at 50% 50%, rgb(255, 255, 255) 25%, transparent 26%);
+        background-repeat: no-repeat;
+        border: 0.25em solid transparent;
+        border-left: 0.4em solid #ffffff;
+        border-right: 0 solid transparent;
+        transition: border-left-color 0.1s 0.3s ease-out, transform 0.3s ease-out;
+        transform: translateX(-22.5%) rotate(90deg);
+        transform-origin: 25% 50%;
+        position: relative;
+        top: 0.5em;
+        left: 0.55em;
+        width: 2em;
+        height: 1em;
+        box-sizing: border-box;
+    }
+
+    .chk:checked+.slider {
+        background-color: limegreen;
+    }
+
+    .chk:focus+.slider {
+        box-shadow: 0 0 1px limegreen;
+    }
+
+    .chk:checked+.slider:before {
+        transform: translateY(2.3em);
+    }
+
+    .chk:checked+.slider:after {
+        transform: rotateZ(90deg) rotateY(180deg) translateY(0.45em) translateX(-1.4em);
     }
 </style>

@@ -15,16 +15,24 @@
                                 <div class="text-center">
                                     <img src="{{ target.avatar }}" class="avatar img-circle" alt="avatar"
                                         id="avatar-field">
+                                    <br><br>
                                     <div class="btn-group" role="group" aria-label="Actions">
                                         {{#if user.admin}}
-                                        <button type="button" class="btn btn-danger" id="delete-user-btn">
-                                            <i class="fa fa-fw fa-trash"></i>
-                                            Eliminar
-                                        </button>
+
+                                        <button class="noselect" id="delete-user-btn"><span
+                                                class="text">Delete</span><span class="icon"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z">
+                                                    </path>
+                                                </svg></span></button>
                                         {{/if}}
-                                        <button class="btn btn-secondary" id="send-msg-btn">
-                                            <i class="fa fa-fw fa-envelope"></i>
-                                            Mensaje
+                                        <button class="learn-more" id="send-msg-btn">
+                                            <span class="circle" aria-hidden="true">
+                                                <span class="icon arrow"></span>
+                                            </span>
+                                            <span class="button-text">Send message</span>
                                         </button>
                                     </div>
                                 </div>
@@ -63,34 +71,34 @@
 </style>
 {{#if user.admin }}
 <script>
-$("#delete-user-btn").click(async function() {
-    displayInteractiveModal("Eliminar usuario", "¿Estás seguro de que quieres eliminar a este usuario?", {
-        className: "btn btn-secondary",
-        text: "Cancelar",
-        onclick: null
-    }, {
-        className: "btn btn-danger",
-        text: "Eliminar",
-        onclick: async () => {
-            const response = await fetch("/api/users/{{target.id}}", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "authorization": "User {{ user.id }}"
-                },
-                body: JSON.stringify({
-                    target: Number("{{ target.id }}")
-                })
-            });
-            if (response.status > 399) {
-                displayModal("Error", "No se pudo eliminar al usuario.");
+    $("#delete-user-btn").click(async function () {
+        displayInteractiveModal("Eliminar usuario", "¿Estás seguro de que quieres eliminar a este usuario?", {
+            className: "btn btn-secondary",
+            text: "Cancelar",
+            onclick: null
+        }, {
+            className: "btn btn-danger",
+            text: "Eliminar",
+            onclick: async () => {
+                const response = await fetch("/api/users/{{target.id}}", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": "User {{ user.id }}"
+                    },
+                    body: JSON.stringify({
+                        target: Number("{{ target.id }}")
+                    })
+                });
+                if (response.status > 399) {
+                    displayModal("Error", "No se pudo eliminar al usuario.");
+                }
+                else {
+                    window.location.href = "/dashboard/users";
+                }
             }
-            else {
-                window.location.href = "/dashboard/users";
-            }
-        }
+        });
     });
-})
 </script>
 {{/if}}
 <script>
@@ -98,3 +106,156 @@ $("#delete-user-btn").click(async function() {
         window.location.href = "/dashboard/users/{{target.id}}/messages";
     });
 </script>
+<style>
+    #delete-user-btn {
+        width: 150px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        background: red;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+        background: #e62222;
+        transform: translateX(-50px) translateY(5px);
+    }
+
+    #delete-user-btn,
+    #delete-user-btn span {
+        transition: 200ms;
+    }
+
+    #delete-user-btn .text {
+        transform: translateX(35px);
+        color: white;
+        font-weight: bold;
+    }
+
+    #delete-user-btn .icon {
+        position: absolute;
+        border-left: 1px solid #c41b1b;
+        transform: translateX(110px);
+        height: 40px;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #delete-user-btn svg {
+        width: 15px;
+        fill: #eee;
+    }
+
+    #delete-user-btn:hover {
+        background: #ff3636;
+    }
+
+    #delete-user-btn:hover .text {
+        color: transparent;
+    }
+
+    #delete-user-btn:hover .icon {
+        width: 150px;
+        border-left: none;
+        transform: translateX(0);
+    }
+
+    #delete-user-btn:focus {
+        outline: none;
+    }
+
+    #delete-user-btn:active .icon svg {
+        transform: scale(0.8);
+    }
+
+    #send-msg-btn {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        outline: none;
+        border: 0;
+        vertical-align: middle;
+        text-decoration: none;
+        background: transparent;
+        padding: 0;
+        font-size: inherit;
+        font-family: inherit;
+        transform: translateX(-49px);
+    }
+
+    #send-msg-btn {
+        width: 12rem;
+        height: auto;
+    }
+
+    #send-msg-btn .circle {
+        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+        position: relative;
+        display: block;
+        margin: 0;
+        width: 3rem;
+        height: 3rem;
+        background: #282936;
+        border-radius: 1.625rem;
+    }
+
+    #send-msg-btn .circle .icon {
+        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        background: #fff;
+    }
+
+    #send-msg-btn .circle .icon.arrow {
+        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+        left: 0.625rem;
+        width: 1.125rem;
+        height: 0.125rem;
+        background: none;
+    }
+
+    #send-msg-btn .circle .icon.arrow::before {
+        position: absolute;
+        content: "";
+        top: -0.29rem;
+        right: 0.0625rem;
+        width: 0.625rem;
+        height: 0.625rem;
+        border-top: 0.125rem solid #fff;
+        border-right: 0.125rem solid #fff;
+        transform: rotate(45deg);
+    }
+
+    #send-msg-btn .button-text {
+        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0.75rem 0;
+        margin: 0 0 0 1.85rem;
+        color: #282936;
+        font-weight: 700;
+        line-height: 1.6;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #send-msg-btn:hover .circle {
+        width: 100%;
+    }
+
+    #send-msg-btn:hover .circle .icon.arrow {
+        background: #fff;
+        transform: translate(1rem, 0);
+    }
+
+    #send-msg-btn:hover .button-text {
+        color: #fff;
+    }
+</style>

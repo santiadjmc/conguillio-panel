@@ -91,7 +91,7 @@ const utils = {
         return new Promise((resolve, reject) => {
             const http = require('http');
             const startOfRequest = Date.now();
-            http.get(`http://127.0.0.1:/:${port}`, (res) => {
+            http.get(`http://127.0.0.1:${port}/`, (res) => {
                 const endOfRequest = Date.now();
                 resolve(endOfRequest - startOfRequest);
             });
