@@ -229,6 +229,12 @@ io.on("connection", async socket => {
             user: user[0],
         });
     });
+    socket.on("get-message-content", async id => {
+        console.log(id);
+        const msg = await db.query("SELECT * FROM messages WHERE id = ?", [!isNaN(Number(id)) ? Number(id) : 1]);
+        if (isNaN(Number(id))) return socket.emit("get-message-content-response", { id, content: "" });
+        else socket.emit("get-message-content-response", { id, content: utils.decryptWithAES(data.server.encryptionKey, msg[0].content) });
+    });
     socket.on("ai", async data => {
         let targetSocket = null;
         io.sockets.sockets.forEach(s => {

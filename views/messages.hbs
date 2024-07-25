@@ -16,7 +16,7 @@
                     <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}"
                         onclick="location.replace(" /")">
                     <b>{{this.username}}</b>:
-                    <content>
+                    <content id="msg-{{this.id}}">
                         {{this.content}}
                     </content>
                 </p>
@@ -52,7 +52,8 @@
         (async function () {
             console.log("START");
             for (const element of document.querySelectorAll(".id-0 content")) {
-                element.innerHTML = await utils.parseMD(element.innerHTML);
+                console.log(element.id, element.id.trim().split("-"));
+                element.innerHTML = await utils.parseMD((await utils.GetMessageContent(element.id.trim().split("-")[1])));
             }
         })();
     }
@@ -172,7 +173,7 @@
                 <div class="chat-message-text">
                     <p class="chat-message-text-paragraph">
                         <img class="chat-message-text-avatar" src="${data.user.avatar}" alt="${data.user.name}">
-                        <b>${data.user.username}</b>: ${data.content}
+                        <b>${data.user.username}</b>: ${utils.removeXSS(data.content)}
                     </p>
                 </div>
             </div>
@@ -197,6 +198,7 @@
                             console.log("APPEND LOOP");
                             $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
                             resolve();
+                            hljs.highlightAll();
                             clearInterval(i);
                             return;
                         }
