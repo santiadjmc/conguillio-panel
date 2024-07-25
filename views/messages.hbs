@@ -16,11 +16,7 @@
                     <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}"
                         onclick="location.replace(" /")">
                     <b>{{this.username}}</b>:
-<<<<<<< HEAD
-                    <content id="msg-{{this.id}}">
-=======
                     <content id="cnt-{{this.id}}">
->>>>>>> 67f8c417c009ad67eb016c5fd997e9555ec72cd8
                         {{this.content}}
                     </content>
                 </p>
@@ -56,12 +52,8 @@
         (async function () {
             console.log("START");
             for (const element of document.querySelectorAll(".id-0 content")) {
-<<<<<<< HEAD
                 console.log(element.id, element.id.trim().split("-"));
                 element.innerHTML = await utils.parseMD((await utils.GetMessageContent(element.id.trim().split("-")[1])));
-=======
-                element.innerHTML = await utils.parseMD(element.innerText);
->>>>>>> 67f8c417c009ad67eb016c5fd997e9555ec72cd8
             }
         })();
     }
