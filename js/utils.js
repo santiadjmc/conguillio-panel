@@ -60,5 +60,24 @@ const utils = {
                 }
             });
         }
+    },
+    parseMD: (text) => {
+        socket.emit("markdown-render", text);
+        console.log(`REQUESTED MARKDOWN: ${text}`);
+        return new Promise((resolve, reject) => {
+            socket.on("markdown-render-response", d => {
+                console.log(`RESOLVED MARKDOWN: ${d}`);
+                resolve(d.trim());
+            });
+        });
+    },
+    GetMessageContent: (id) => {
+        socket.emit("get-message-content", Number(id));
+        return new Promise((resolve, reject) => {
+            socket.on("get-message-content-response", d => { if (d.id === Number(id)) resolve(d.content) });
+        });
+    },
+    removeXSS: (str) => {
+        return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
     }
 }

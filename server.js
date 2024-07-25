@@ -20,6 +20,8 @@ const WebSocketsManager = require("./managers/WebSocketsManager");
 const RateLimitManager = require("./managers/RateLimitManager");
 const { default: fetch } = require("node-fetch");
 const RateLimit = new RateLimitManager(100);
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY);
 function genRandomString(length) {
     const chars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
     let result = "";
@@ -131,6 +133,7 @@ wss.on("set-user-id", async (args, ws) => {
 // Socket.io
 
 const io = SocketIO(server);
+const chats = new Map();
 
 io.on("connection", async socket => {
     socket.on("message", async data => {
@@ -161,6 +164,14 @@ io.on("connection", async socket => {
                 user: user[0]
             });
         }
+    });
+    socket.on("get-message-content", async id => {
+        const msg = await db.query("SELECT * FROM messages WHERE id = ?", [id]);
+        if (!msg[0]) return socket.emit("get-message-content-response", "");
+        return socket.emit("get-message-content-response", { content: utils.decryptWithAES(data.server.encryptionKey, msg[0].content), id });
+    });
+    socket.on("markdown-render", text => {
+        socket.emit("markdown-render-response", utils.getMarkdown(text));
     });
     socket.on("disconnect", async () => {
         setTimeout(async () => {
@@ -241,19 +252,41 @@ io.on("connection", async socket => {
                 id: 0
             }
         });
-        const aiResponse = await fetch(`${process.env.AI_API_ENDPOINT}/get?bid=${process.env.AI_API_BID}&key=${process.env.AI_API_KEY}&msg=${encodeURI(data.content)}&uid=${socket.userid}`);
-        const response = await aiResponse.json();
+        if (!socket.userid) return socket.emit("reload");
+        const history = await db.query("SELECT * FROM ai_history WHERE uid = ?", [socket.userid]);
+        let hdata = history[0] ? JSON.parse(history[0].content).data : null;
+        if (!hdata) {
+            db.query("INSERT INTO ai_history SET ? ", [{
+                content: JSON.stringify({ data: [{ parts: [{ text: data.content }], role: "user" }] }),
+                uid: socket.userid
+            }]);
+        };
+        let chat = chats.get(socket.userid);
+        if (!chat) {
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            chat = model.startChat({
+                history: hdata,
+                generationConfig: {
+                    maxOutputTokens: 1024
+                }
+            });
+            chats.set(socket.userid, chat);
+        }
+        let response = await utils.getAiResponse(data.content, chat) || "Oops... No tengo una respuesta ahora.";
+        if (!hdata) hdata = [];
+        hdata.push({ parts: [{ text: data.content }], role: "user" }, { parts: [{ text: response }], role: "model" });
+        await db.query("UPDATE ai_history SET ? WHERE uid = ?", [{ content: JSON.stringify({ data: hdata }) }, socket.userid]);
         await fetch(`http://localhost:${app.get('port')}/api/users/${socket.chat}/messages`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "User " + socket.userid
             },
-            body: JSON.stringify({ content: response.cnt, bot: true })
+            body: JSON.stringify({ content: response, bot: true })
         });
         socket.emit("message", {
             currentChat: true,
-            content: response.cnt,
+            content: response,
             user: {
                 username: "BarnieBot",
                 avatar: "/img/barnie_avatar.png",
@@ -264,7 +297,7 @@ io.on("connection", async socket => {
         if (targetSocket && targetSocket?.chat === socket.userid) {
             targetSocket?.emit("message", {
                 currentChat: true,
-                content: response.cnt,
+                content: response,
                 user: {
                     username: "BarnieBot",
                     avatar: "/img/barnie_avatar.png",

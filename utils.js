@@ -2,6 +2,12 @@ const Crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const data = require("./data/data");
+const MarkdownIt = require('markdown-it');
+const md = new MarkdownIt({
+    html: true,
+    linkify: true,
+    typographer: true,
+}).use(require('markdown-it-highlightjs')).use(require('markdown-it-named-code-blocks'), { isEnableInlineCss: true });
 const utils = {
     encryptWithAES: (key, data) => {
         const cipher = Crypto.createCipher('aes-256-cbc', key);
@@ -96,6 +102,15 @@ const utils = {
                 resolve(endOfRequest - startOfRequest);
             });
         });
+    },
+    getAiResponse: async (prompt, chat) => {
+        const result = await chat.sendMessage(prompt);
+        const response = await result.response;
+        const text = response.text();
+        return text;
+    },
+    getMarkdown: text => {
+        return md.render(text);
     }
 };
 module.exports = utils;

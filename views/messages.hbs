@@ -12,9 +12,13 @@
         {{#each messages}}
         <div class="chat-message {{#if this.isOwn}}own{{/if}}">
             <div class="chat-message-text">
-                <p class="chat-message-text-paragraph">
-                    <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}" onclick="location.replace("/")">
-                    <b>{{this.username}}</b>: {{this.content}}
+                <p class="chat-message-text-paragraph id-{{this.user_id}}">
+                    <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}"
+                        onclick="location.replace(" /")">
+                    <b>{{this.username}}</b>:
+                    <content>
+                        {{this.content}}
+                    </content>
                 </p>
             </div>
         </div>
@@ -44,8 +48,13 @@
     let userStatus = "{{target.status}}";
     let ai_msg_id = 0;
     let gotTyping = false;
-    function removeXSS(str) {
-        return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
+    window.onload = () => {
+        (async function () {
+            console.log("START");
+            for (const element of document.querySelectorAll(".id-0 content")) {
+                element.innerHTML = await utils.parseMD(element.innerHTML);
+            }
+        })();
     }
     $(window).scroll(function () {
         if ($(this).scrollTop() > 50) {
@@ -116,7 +125,7 @@
                     <div class="chat-message-text">
                         <p class="chat-message-text-paragraph">
                             <img class="chat-message-text-avatar" src="{{user.avatar}}" alt="{{user.name}}">
-                            <b>{{user.username}}</b>: ${removeXSS(text)}</p>
+                            <b>{{user.username}}</b>: ${utils.removeXSS(text)}</p>
                     </div>
                 </div>
             `);
@@ -135,14 +144,14 @@
             }
             console.log("WebSocketManager: Message stored, sending to server through socket...");
             socket.emit("message", {
-                content: removeXSS(text),
+                content: utils.removeXSS(text),
                 target: '{{target.id}}',
                 user: '{{user.id}}'
             });
             console.log("WebSocketManager: Message sent to server through socket.");
             if (ai_status) {
                 socket.emit("ai", {
-                    content: removeXSS(text),
+                    content: utils.removeXSS(text),
                     target: '{{target.id}}',
                     user: '{{user.id}}'
                 });
@@ -175,23 +184,27 @@
                 <div class="chat-message-text">
                     <p class="chat-message-text-paragraph" id="ai-${ai_msg_id}">
                         <img class="chat-message-text-avatar" src="${data.user.avatar}" alt="${data.user.username}">
-                        <b>${data.user.username}</b>:
+                        <b>${data.user.username}</b>: <content></content>
                     </p>
                 </div>
             </div>
         `);
-            await (() => {
-                return new Promise((resolve, reject) => {
+            await (async () => {
+                return new Promise(async (resolve, reject) => {
                     let currentIndex = 0;
-                    setInterval(() => {
-                        if (currentIndex === data.content.length) {
+                    const i = setInterval(async () => {
+                        if ((currentIndex + 1) === data.content.length) {
+                            console.log("APPEND LOOP");
+                            $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
                             resolve();
+                            clearInterval(i);
+                            return;
                         }
                         else {
-                            $(`#ai-${ai_msg_id}`).append(data.content[currentIndex]);
+                            $(`#ai-${ai_msg_id} content`).append(data.content[currentIndex]);
                             currentIndex += 1;
                         }
-                    }, 65);
+                    }, 15);
                 });
             })();
             ai_msg_id++;

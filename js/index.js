@@ -5,3 +5,7 @@ socket.on("message", async data => {
         location.href = `/dashboard/users/${data.user.id}/messages`;
     }, data.user.avatar);
 });
+socket.on("reload", () => {
+    displayModal("Whoops...", "El servidor me ordenó reiniciar tu página, lo haré en 5 segundos 🥴");
+    setTimeout(() => { location.reload() }, 5000);
+});
