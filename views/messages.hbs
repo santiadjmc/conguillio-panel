@@ -16,7 +16,11 @@
                     <img class="chat-message-text-avatar" src="{{this.avatar}}" alt="{{this.name}}"
                         onclick="location.replace(" /")">
                     <b>{{this.username}}</b>:
+<<<<<<< HEAD
                     <content id="msg-{{this.id}}">
+=======
+                    <content id="cnt-{{this.id}}">
+>>>>>>> 67f8c417c009ad67eb016c5fd997e9555ec72cd8
                         {{this.content}}
                     </content>
                 </p>
@@ -26,7 +30,7 @@
     </div>
     <div class="chat-input">
         <input type="text" class="chat-input-text" placeholder="Envia un mensaje a @{{target.username}}"
-            autocomplete="off" autofocus>
+            autocomplete="off" autofocus id="chat-input-text">
         <button type="button" class="chat-input-button">
             <i class="fas fa-paper-plane"></i>
         </button>
@@ -52,8 +56,12 @@
         (async function () {
             console.log("START");
             for (const element of document.querySelectorAll(".id-0 content")) {
+<<<<<<< HEAD
                 console.log(element.id, element.id.trim().split("-"));
                 element.innerHTML = await utils.parseMD((await utils.GetMessageContent(element.id.trim().split("-")[1])));
+=======
+                element.innerHTML = await utils.parseMD(element.innerText);
+>>>>>>> 67f8c417c009ad67eb016c5fd997e9555ec72cd8
             }
         })();
     }
@@ -190,6 +198,7 @@
                 </div>
             </div>
         `);
+        document.getElementById("chat-input-text").disabled = true;
             await (async () => {
                 return new Promise(async (resolve, reject) => {
                     let currentIndex = 0;
@@ -197,6 +206,7 @@
                         if ((currentIndex + 1) === data.content.length) {
                             console.log("APPEND LOOP");
                             $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
+                            document.getElementById("chat-input-text").disabled = false;
                             resolve();
                             hljs.highlightAll();
                             clearInterval(i);
