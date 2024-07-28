@@ -53,7 +53,7 @@ const utils = {
     },
     decryptMessages: (messages) => {
         messages.forEach((message) => {
-            message.content = utils.decryptWithAES(data.server.encryptionKey, message.content);
+            message.content = md.render(utils.decryptWithAES(data.server.encryptionKey, message.content));
         });
         return messages;
     },

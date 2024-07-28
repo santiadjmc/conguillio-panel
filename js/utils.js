@@ -63,10 +63,8 @@ const utils = {
     },
     parseMD: (text) => {
         socket.emit("markdown-render", text);
-        console.log(`REQUESTED MARKDOWN: ${text}`);
         return new Promise((resolve, reject) => {
             socket.on("markdown-render-response", d => {
-                console.log(`RESOLVED MARKDOWN: ${d}`);
                 resolve(d.trim());
             });
         });
@@ -78,6 +76,11 @@ const utils = {
         });
     },
     removeXSS: (str) => {
-        return str.replace(/<(?:.|\n)*?>/gm, 'HTML TAG REMOVED');
+        return str.replace(/<(?:.|\n)*?>/gm, '$1');
+    },
+    wait: time => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => { resolve(0) }, time);
+        });
     }
 }

@@ -17,7 +17,7 @@
                         onclick="location.replace(" /")">
                     <b>{{this.username}}</b>:
                     <content id="cnt-{{this.id}}">
-                        {{this.content}}
+                        {{{this.content}}}
                     </content>
                 </p>
             </div>
@@ -48,15 +48,6 @@
     let userStatus = "{{target.status}}";
     let ai_msg_id = 0;
     let gotTyping = false;
-    window.onload = () => {
-        (async function () {
-            console.log("START");
-            for (const element of document.querySelectorAll(".id-0 content")) {
-                console.log(element.id, element.id.trim().split("-"));
-                element.innerHTML = await utils.parseMD((await utils.GetMessageContent(element.id.trim().split("-")[1])));
-            }
-        })();
-    }
     $(window).scroll(function () {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();
@@ -126,7 +117,7 @@
                     <div class="chat-message-text">
                         <p class="chat-message-text-paragraph">
                             <img class="chat-message-text-avatar" src="{{user.avatar}}" alt="{{user.name}}">
-                            <b>{{user.username}}</b>: ${utils.removeXSS(text)}</p>
+                            <b>{{user.username}}</b>: ${await utils.parseMD(utils.removeXSS(text))}</p>
                     </div>
                 </div>
             `);
@@ -173,7 +164,7 @@
                 <div class="chat-message-text">
                     <p class="chat-message-text-paragraph">
                         <img class="chat-message-text-avatar" src="${data.user.avatar}" alt="${data.user.name}">
-                        <b>${data.user.username}</b>: ${utils.removeXSS(data.content)}
+                        <b>${data.user.username}</b>: ${await utils.parseMD(utils.removeXSS(data.content))}
                     </p>
                 </div>
             </div>
@@ -190,13 +181,12 @@
                 </div>
             </div>
         `);
-        document.getElementById("chat-input-text").disabled = true;
+            document.getElementById("chat-input-text").disabled = true;
             await (async () => {
                 return new Promise(async (resolve, reject) => {
                     let currentIndex = 0;
                     const i = setInterval(async () => {
                         if ((currentIndex + 1) === data.content.length) {
-                            console.log("APPEND LOOP");
                             $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
                             document.getElementById("chat-input-text").disabled = false;
                             resolve();

@@ -86,8 +86,9 @@ app.use("*", (req, res, next) => {
     })
 });
 // Server
-const server = app.listen(app.get('port'), () => {
+const server = app.listen(app.get('port'), async () => {
     Log.success(`server`, `Server started on port ${app.get('port')}`);
+    await db.query("UPDATE users SET status = 'offline'");
     setInterval(async () => {
         const svPing = await utils.getServerPing(data.server.port);
         if (svPing > 99) {
@@ -225,12 +226,11 @@ io.on("connection", async socket => {
         user = await db.query(`SELECT * FROM users WHERE id = ?`, [user]);
         delete user[0].password;
         targetSocket.emit("typing", {
-            isTyping: content !== "" && content !== " ",
+            isTyping: !(content.trim().split("").every(c => c === "")),
             user: user[0],
         });
     });
     socket.on("get-message-content", async id => {
-        console.log(id);
         const msg = await db.query("SELECT * FROM messages WHERE id = ?", [!isNaN(Number(id)) ? Number(id) : 1]);
         if (isNaN(Number(id))) return socket.emit("get-message-content-response", { id, content: "" });
         else socket.emit("get-message-content-response", { id, content: utils.decryptWithAES(data.server.encryptionKey, msg[0].content) });
