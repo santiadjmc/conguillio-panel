@@ -11,6 +11,10 @@ function onlyAuth(req, res, next) {
     res.redirect('/');
 }
 
+router.get("/favicon.ico", (req, res) => {
+    res.send("../img/avatars/favicon-16x16.png");
+});
+
 router.get("/", (req, res) => {
     if (req.isAuthenticated()) {
         return res.redirect("/dashboard");
@@ -146,6 +150,11 @@ router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => 
         title: `${user[0].username}`,
         target: user[0],
         messages: JSON.parse(JSON.stringify(utils.decryptMessages(messages))),
+    });
+});
+router.get("/dashboard/trash/add", onlyAuth, (req, res) => {
+    res.render("trash_register", {
+        title: "Registra basura"
     });
 });
 

@@ -82,5 +82,13 @@ const utils = {
         return new Promise((resolve, reject) => {
             setTimeout(() => { resolve(0) }, time);
         });
+    },
+    checkFields: (...fields) => {
+        for (const field of fields) {
+            if (field === "" || field === null || field === " ") {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -77,7 +77,13 @@ router.post("/users/new", restricted, async (req, res) => {
         });
     }
     const encryptedPassword = utils.encryptWithAES(data.server.encryptionKey, password);
-    await db.query(`INSERT INTO users (username, password, email, admin, name) VALUES (?, ?, ?, ?, ?)`, [username, encryptedPassword, email, admin, name]);
+    await db.query(`INSERT INTO users SET ?`, [{
+        username,
+        password: encryptedPassword,
+        email,
+        admin,
+        name
+    }]);
     res.json({
         status: 200,
         message: 'User created'
@@ -86,7 +92,7 @@ router.post("/users/new", restricted, async (req, res) => {
 
 router.post("/users/:id/messages", restricted, async (req, res, next) => {
     const id = req.params.id;
-    const userRequesting = req.body.bot ?  [{ id: 0 }] : await db.query(`SELECT * FROM users WHERE id = ?`, [req.user.id ?? req.headers.authorization.split(' ')[1]]);
+    const userRequesting = req.body.bot ? [{ id: 0 }] : await db.query(`SELECT * FROM users WHERE id = ?`, [req.user.id ?? req.headers.authorization.split(' ')[1]]);
     const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
     if (!user[0]) {
         return next();
@@ -101,6 +107,15 @@ router.post("/users/:id/messages", restricted, async (req, res, next) => {
         status: 200,
         message: "Message stored"
     });
+});
+
+router.post("/trash/data", restricted, async (req, res) => {
+    const { uid, name, quantity } = req.body;
+    if ([uid, name, quantity].some(i => !i)) return res.status(400).json({ status: 400, message: "Missing parameters" });
+    const user = db.query("SELECT * FROM users WHERE id = ?", [uid]);
+    if (!user[0]) return res.status(400).json({ status: 400, message: "Missing valid UID" });
+    await db.query("INSERT INTO trash_logs SET ?", [{ uid, data: `El usuario ${user[0].username} ha registrado botar ${quantity} unidades de ${name}` }]);
+    return res.status(200).json({ status: 200, message: "Logged" });
 });
 
 module.exports = router;

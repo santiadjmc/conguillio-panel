@@ -183,6 +183,7 @@
         `);
             document.getElementById("chat-input-text").disabled = true;
             await (async () => {
+                data.content = data.content.replaceAll("???", "");
                 return new Promise(async (resolve, reject) => {
                     let currentIndex = 0;
                     const i = setInterval(async () => {
@@ -195,10 +196,11 @@
                             return;
                         }
                         else {
-                            $(`#ai-${ai_msg_id} content`).append(data.content[currentIndex]);
+                            $(`#ai-${ai_msg_id} content`).html(await (utils.parseMD(data.content.slice(0, currentIndex))));
+                            hljs.highlightAll();
                             currentIndex += 1;
                         }
-                    }, 15);
+                    }, 5);
                 });
             })();
             ai_msg_id++;

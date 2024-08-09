@@ -44,14 +44,6 @@
     </div>
 </center>
 <script>
-    function checkFields(...fields) {
-        for (let field of fields) {
-            if (field === "" || field === null || field === " ") {
-                return false;
-            }
-        }
-        return true;
-    }
     $("#submit-btn").click(async function () {
         if ($("#password").val() !== $("#password-confirm").val()) {
             displayModal("Error", "Las contraseñas no coinciden");
@@ -70,7 +62,7 @@
             password,
             admin
         }
-        if (!checkFields(name, username, email, password, password_confirm)) {
+        if (!utils.checkFields(name, username, email, password, password_confirm)) {
             displayModal("Error", "Todos los campos son obligatorios");
             return;
         }
@@ -90,6 +82,7 @@
                 }, 1500);
             }
         });
+        setTimeout(() => { window.location.href = "/dashboard/users"; }, 2500);
     });
 </script>
 <style>

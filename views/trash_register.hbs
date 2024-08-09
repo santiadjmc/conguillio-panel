@@ -1,0 +1,70 @@
+<div class="container">
+    <button class="btn btn-primary" id="add-item-btn">Agregar item</button>
+    <button class="btn btn-success" id="submit-btn">Guardar</button>
+</div>
+<center>
+    <div class="container" id="items-container">
+        <div class="card">
+            <div class="card-header">
+                <h4>Artículo botado</h4>
+            </div>
+            <div class="card-body">
+                <div>
+                    <label for="name">Nombre del artículo</label>
+                    <input type="text" class="form-control trash-item-name" id="name" name="name" placeholder="Papel"
+                        required>
+                </div>
+                <div>
+                    <label for="quantity">Cantidad</label>
+                    <input type="number" class="form-control trash-item-quantity" id="quantity" name="quantity"
+                        placeholder="1" required>
+                </div>
+            </div>
+        </div>
+    </div>
+</center>
+<script>
+    $("#add-item-btn").click(function () {
+        const card = document.createElement("div");
+        card.className = "card";
+        const cardHeader = document.createElement("div");
+        cardHeader.className = "card-header";
+        cardHeader.appendChild((function () { const text = document.createElement("h4"); text.innerText = "Artículo botado"; return text; })());
+        const cardBody = document.createElement("div");
+        cardBody.className = "card-body";
+        card.appendChild(cardHeader);
+        card.appendChild(cardBody);
+        cardBody.innerHTML = `<div>
+                    <label for="name">Nombre del artículo</label>
+                    <input type="text" class="form-control trash-item-name" id="name" name="name" placeholder="Papel"
+                        required>
+                </div>
+                <div>
+                    <label for="quantity">Cantidad</label>
+                    <input type="number" class="form-control trash-item-quantity" id="quantity" name="quantity" placeholder="1"
+                        required>
+                </div>`;
+        document.querySelector("#items-container").appendChild(card);
+    });
+    $("#submit-btn").click(async function () {
+        const items = document.querySelectorAll(".container .card .card-body");
+        const form = document.createElement("form");
+        for (const item of items) {
+            const [nameDiv, quantityDiv] = item.children;
+            const [name, quantity] = [nameDiv.children[1].value, Number(quantityDiv.children[1].value)];
+            if (!utils.checkFields(name, quantity)) return displayModal("Error", "Debes rellenar todos los campos");
+            await fetch("/api/trash/data", {
+                method: "POST",
+                headers: {
+                    'Content-Type': "application/json",
+                    'Authorization': 'User {{user.id}}'
+                },
+                body: JSON.stringify({
+                    name,
+                    quantity,
+                    uid: "{{user.id}}"
+                })
+            });
+        }
+    });
+</script>

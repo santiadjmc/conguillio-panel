@@ -273,7 +273,7 @@ io.on("connection", async socket => {
             chat = model.startChat({
                 history: hdata,
                 generationConfig: {
-                    maxOutputTokens: 1024
+                    maxOutputTokens: 2048
                 }
             });
             chats.set(socket.userid, chat);

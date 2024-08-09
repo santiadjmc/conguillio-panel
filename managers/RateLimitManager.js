@@ -58,7 +58,7 @@ class RateLimitManager extends EventEmitter {
         const r = async function (req, res, next) {
             if (!req.ip) return next();
             const ip = req.ip.replace("::ffff:", "");
-            if (ip === "::1") return next();
+            if (["::1", "127.0.0.1"].some(i => i === ip)) return next();
             if (manager.ips.has(ip)) {
                 /**
                  * @type {RateLimitIP}
