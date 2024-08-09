@@ -187,17 +187,17 @@
                 return new Promise(async (resolve, reject) => {
                     let currentIndex = 0;
                     const i = setInterval(async () => {
-                        if ((currentIndex + 1) === data.content.length) {
+                        if (currentIndex === data.content.length - 1) {
                             $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
                             document.getElementById("chat-input-text").disabled = false;
                             resolve();
                             hljs.highlightAll();
                             clearInterval(i);
+                            console.log("DONE"); 
                             return;
                         }
                         else {
                             $(`#ai-${ai_msg_id} content`).html(await (utils.parseMD(data.content.slice(0, currentIndex))));
-                            hljs.highlightAll();
                             currentIndex += 1;
                         }
                     }, 5);
