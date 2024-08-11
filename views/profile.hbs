@@ -83,6 +83,7 @@
         const data = await rsp.json();
         if (data.status > 399) {
             jelement.text("Error al cargar los registros.");
+            console.log(`ERR: ${data.status} || ${data.message}`);
         }
         else {
             jelement.text(data.logs.map(d => {
