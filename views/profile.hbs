@@ -35,6 +35,13 @@
                                                 disabled>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <div class="mb-3">
+                                            <label for="trash-logs-area" class="form-label">Registros</label>
+                                            <textarea class="form-control" id="trash-logs-area" rows="3"
+                                                disabled>Cargando...</textarea>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -61,6 +68,30 @@
                 }
                 ws.onmessage = ws.defaultOnMessage;
                 $("#upload-pic-text").text("Subir foto...");
+            }
+        }
+    });
+    $(window).ready(async function () {
+        const jelement = $("#trash-logs-area");
+        const uid = "{{user.id}}";
+        const rsp = await fetch(`/api/users/${uid}/trash/data/`, {
+            method: "GET",
+            headers: {
+                'Authorization': 'User {{user.id}}'
+            }
+        });
+        const data = await rsp.json();
+        if (data.status > 399) {
+            jelement.text("Error al cargar los registros.");
+        }
+        else {
+            jelement.text(data.logs.map(d => {
+                const date = new Date(d.date);
+                const dateString = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${(date.getMinutes() + "").padStart(2, "0")}`;
+                return `${d.data} [${dateString}]`;
+            }).join("\n"));
+            if (data.logs.length === 0) {
+                jelement.text("No hay registros.");
             }
         }
     });

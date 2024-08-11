@@ -53,7 +53,7 @@
             const [nameDiv, quantityDiv] = item.children;
             const [name, quantity] = [nameDiv.children[1].value, Number(quantityDiv.children[1].value)];
             if (!utils.checkFields(name, quantity)) return displayModal("Error", "Debes rellenar todos los campos");
-            await fetch("/api/trash/data", {
+            const rsp = await fetch("/api/trash/data", {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json",
@@ -65,6 +65,14 @@
                     uid: "{{user.id}}"
                 })
             });
+            const json = await rsp.json();
+            if (json.status > 399) {
+                displayModal("Error", "Oops, hubo un error al subir los datos, intenta más tarde.");
+                console.log(`ERR: ${json.status} || ${json.message}`);
+                return;
+            }
         }
+        displayModal("¡Bien!", "¡Hemos registrado la basura que has botado! Serás redirigido a tu perfil en 3 segundos.");
+        setTimeout(() => { window.location.href = "/dashboard/profile" }, 3000);
     });
 </script>

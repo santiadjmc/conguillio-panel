@@ -112,10 +112,19 @@ router.post("/users/:id/messages", restricted, async (req, res, next) => {
 router.post("/trash/data", restricted, async (req, res) => {
     const { uid, name, quantity } = req.body;
     if ([uid, name, quantity].some(i => !i)) return res.status(400).json({ status: 400, message: "Missing parameters" });
-    const user = db.query("SELECT * FROM users WHERE id = ?", [uid]);
+    const user = await db.query("SELECT * FROM users WHERE id = ?", [uid]);
     if (!user[0]) return res.status(400).json({ status: 400, message: "Missing valid UID" });
     await db.query("INSERT INTO trash_logs SET ?", [{ uid, data: `El usuario ${user[0].username} ha registrado botar ${quantity} unidades de ${name}` }]);
     return res.status(200).json({ status: 200, message: "Logged" });
+});
+
+router.get("/users/:uid/trash/data", restricted, async (req, res) => {
+    const uid = req.params.uid;
+    const user = await db.query("SELECT * FROM users WHERE id = ?", [Number(uid)]);
+    if (!user[0]) return res.status(400).json({ status: 400, message: "Missing valid UID" });
+    const logs = await db.query("SELECT * FROM trash_logs WHERE uid = ?", [uid]);
+    logs.sort((a, b) => b.id - a.id);
+    return res.status(200).json({ status: 200, logs });
 });
 
 module.exports = router;
