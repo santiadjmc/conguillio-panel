@@ -292,7 +292,7 @@ io.on("connection", async socket => {
         });
         socket.emit("message", {
             currentChat: true,
-            content: response,
+            content: (await utils.getMarkdown(response)),
             user: {
                 username: "BarnieBot",
                 avatar: "/img/barnie_avatar.png",
