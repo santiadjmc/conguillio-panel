@@ -120,12 +120,22 @@ router.post("/dashboard/users/:id/edit", onlyAuth, async (req, res, next) => {
 });
 
 router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => {
-    const id = req.params.id;
+    const id = Number(req.params.id);
     const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
     if (!user[0]) {
         return next();
     }
-    const messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = ? OR target_id = ? AND user_id = 0 OR target_id = ? AND user_id = 0`, [id, req.user.id, req.user.id, id, id, req.user.id]);
+    let messages = await db.query(`SELECT * FROM messages`);
+    messages = messages.filter(msg => {
+        if ((function () {
+            const keys = ["user_id", "target_id"];
+            if (keys.every(k => [id, req.user.id, 0].includes(msg[k]))) {
+                return true;
+            }
+        })()) {
+            return msg;
+        }
+    });
     messages.forEach(msg => {
         if (msg.user_id === req.user.id) {
             msg.isOwn = true;

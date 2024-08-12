@@ -48,6 +48,7 @@
     let userStatus = "{{target.status}}";
     let ai_msg_id = 0;
     let gotTyping = false;
+    let aiTyping = false;
     $(window).scroll(function () {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();
@@ -181,7 +182,8 @@
                 </div>
             </div>
         `);
-            document.getElementById("chat-input-text").disabled = true;
+            //document.getElementById("chat-input-text").disabled = true;
+            aiTyping = true;
             await (async () => {
                 data.content = data.content.replaceAll("???", "");
                 return new Promise(async (resolve, reject) => {
@@ -190,10 +192,11 @@
                         if ((currentIndex + 1) === data.content.length) {
                             $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
                             document.getElementById("chat-input-text").disabled = false;
-                            resolve();
+                            updateAiTyping(false);
                             hljs.highlightAll();
                             clearInterval(i);
-                            console.log("DONE");
+                            console.log("TYPING DONE");
+                            resolve();
                             return;
                         }
                         else {
@@ -203,6 +206,7 @@
                     }, 5);
                 });
             })();
+            $(`#ai-${ai_msg_id} content`).html(await utils.parseMD(data.content));
             ai_msg_id++;
         }
         window.scrollBy(0, 230);
@@ -230,6 +234,13 @@
         if (lastUnread > 0) $(".chat-input-text").focus();
         focused = true;
     });
+    function updateAiTyping(status) {
+        aiTyping = status;
+    }
+
+    setInterval(() => {
+        $("#chat-input-text").attr("disabled", aiTyping);
+    }, 1000);
     socket.on("typing", function (data) {
         if (!data.isTyping) {
             $("#typing").remove();
