@@ -30,7 +30,7 @@
         <button type="button" class="chat-input-button">
             <i class="fas fa-paper-plane"></i>
         </button>
-        <label class="switch">
+        <label class="switch" id="ai-label">
             <input type="checkbox" class="chk" id="ai-input-btn">
             <span class="slider"></span>
         </label>
@@ -49,6 +49,9 @@
     let ai_msg_id = 0;
     let gotTyping = false;
     let aiTyping = false;
+    if ("{{target.id}}" == "0") {
+        $("#ai-label").remove();
+    }
     $(window).scroll(function () {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();

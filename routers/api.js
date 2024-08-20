@@ -91,7 +91,7 @@ router.post("/users/new", restricted, async (req, res) => {
 });
 
 router.post("/users/:id/messages", restricted, async (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
     const userRequesting = req.body.bot ? [{ id: 0 }] : await db.query(`SELECT * FROM users WHERE id = ?`, [req.user.id ?? req.headers.authorization.split(' ')[1]]);
     const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
     if (!user[0]) {
@@ -100,7 +100,8 @@ router.post("/users/:id/messages", restricted, async (req, res, next) => {
     const messageData = {
         target_id: user[0].id,
         user_id: userRequesting[0].id,
-        content: utils.encryptWithAES(data.server.encryptionKey, req.body.bot ? req.body.content : utils.removeXSS(req.body.content))
+        content: utils.encryptWithAES(data.server.encryptionKey, req.body.bot ? req.body.content : utils.removeXSS(req.body.content)),
+        users_id: req.body.bot ? req.body.users.join(",") : `${userRequesting[0].id},${user[0].id}`
     }
     await db.query("INSERT INTO messages SET ?", messageData);
     res.json({

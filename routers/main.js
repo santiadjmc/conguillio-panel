@@ -61,7 +61,7 @@ router.get("/dashboard/users/:id/profile", onlyAuth, async (req, res, next) => {
 });
 
 router.get("/dashboard/users", onlyAuth, async (req, res) => {
-    const users = await db.query(`SELECT * FROM users`);
+    const users = (await db.query(`SELECT * FROM users`)).filter(user => !user.hidden);
     if (req.query.filter) {
         const filteredUsers = users.filter(user => user.username.toLowerCase().includes(req.query.filter.toLowerCase()) || user.name.toLowerCase().includes(req.query.filter.toLowerCase()));
         if (filteredUsers.length < 1) {
@@ -130,6 +130,8 @@ router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => 
         if ((function () {
             const keys = ["user_id", "target_id"];
             if (keys.every(k => [id, req.user.id, 0].includes(msg[k]))) {
+                if (msg.user_id === 0 && !(msg.users_id.trim().split(",")).every(u => [id, req.user.id].includes(Number(u)))) return false;
+                if (!(msg.user_id === id && msg.target_id === req.user.id) && !(msg.user_id === req.user.id && msg.target_id === id)) return false;
                 return true;
             }
         })()) {

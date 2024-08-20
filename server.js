@@ -88,7 +88,7 @@ app.use("*", (req, res, next) => {
 // Server
 const server = app.listen(app.get('port'), async () => {
     Log.success(`server`, `Server started on port ${app.get('port')}`);
-    await db.query("UPDATE users SET status = 'offline'");
+    await db.query("UPDATE users SET status = 'offline' WHERE id != 0");
     const filterAiHistory = (await db.query("SELECT * FROM ai_history")).filter(h => h.content.length >= 60000);
     if (filterAiHistory.length > 0) {
         let deletedHistory = 0;
@@ -153,7 +153,66 @@ io.on("connection", async socket => {
                 targetSocket = s;
             }
         });
-        if (!targetSocket) return;
+        if (!targetSocket && data.target !== "0") return;
+        if (data.target === "0") {
+            if (!socket.userid) return socket.emit("reload");
+            socket.emit("typing", {
+                isTyping: true,
+                user: {
+                    username: "BarnieBot",
+                    avatar: "/img/barnie_avatar.png"
+                }
+            });
+            const history = await db.query("SELECT * FROM ai_history WHERE uid = ?", [socket.userid]);
+            let hdata = history[0] ? JSON.parse(history[0].content).data : null;
+            if (!hdata) {
+                db.query("INSERT INTO ai_history SET ? ", [{
+                    content: JSON.stringify({ data: [{ parts: [{ text: data.content }], role: "user" }] }),
+                    uid: socket.userid
+                }]);
+            };
+            let chat = chats.get(socket.userid);
+            if (!chat) {
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                chat = model.startChat({
+                    history: hdata,
+                    generationConfig: {
+                        maxOutputTokens: 2048
+                    }
+                });
+                chats.set(socket.userid, chat);
+            }
+            let response = await utils.getAiResponse(data.content, chat) || "Oops... No tengo una respuesta ahora.";
+            if (!hdata) hdata = [];
+            hdata.push({ parts: [{ text: data.content }], role: "user" }, { parts: [{ text: response }], role: "model" });
+            await db.query("UPDATE ai_history SET ? WHERE uid = ?", [{ content: JSON.stringify({ data: hdata }) }, socket.userid]);
+            await fetch(`http://localhost:${app.get('port')}/api/users/${socket.chat}/messages`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "User " + socket.userid
+                },
+                body: JSON.stringify({ content: response, bot: true, users: [socket.userid, socket.chat] })
+            });
+            socket.emit("message", {
+                currentChat: true,
+                content: (await utils.getMarkdown(response)),
+                user: {
+                    username: "BarnieBot",
+                    avatar: "/img/barnie_avatar.png",
+                    name: "BarnieBot"
+
+                }
+            });
+            socket.emit("typing", {
+                isTyping: false,
+                user: {
+                    username: "BarnieBot",
+                    avatar: "/img/barnie_avatar.png"
+                }
+            });
+            return;
+        }
         const user = await db.query(`SELECT * FROM users WHERE id = ?`, [data.user]);
         delete user[0].password;
         if (targetSocket.chat !== data.user) {
@@ -297,7 +356,7 @@ io.on("connection", async socket => {
                 "Content-Type": "application/json",
                 "Authorization": "User " + socket.userid
             },
-            body: JSON.stringify({ content: response, bot: true })
+            body: JSON.stringify({ content: response, bot: true, users: [socket.userid, socket.chat] })
         });
         socket.emit("message", {
             currentChat: true,
