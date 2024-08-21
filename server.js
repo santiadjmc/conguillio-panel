@@ -96,12 +96,12 @@ const server = app.listen(app.get('port'), async () => {
             await db.query("DELETE FROM ai_history WHERE id = ?", [h.id]);
             deletedHistory++;
         });
-        Log.warn("server", `Deleted ${deletedHistory} AI history entries due to a length of over 60,000 characters`);
+        Log.warn("server", `[!] Deleted ${deletedHistory} AI history entries due to a length of over 60,000 characters`);
     }
     setInterval(async () => {
         const svPing = await utils.getServerPing(data.server.port);
-        if (svPing > 99) {
-            Log.warn('server', `The server ping is over 99 [${svPing} ms]`);
+        if (svPing > 199) {
+            Log.warn('server', `The server ping is over 199 [${svPing} ms]`);
         }
         else {
             Log.info("server", `The server ping is ${svPing} ms`);
@@ -192,7 +192,7 @@ io.on("connection", async socket => {
                     "Content-Type": "application/json",
                     "Authorization": "User " + socket.userid
                 },
-                body: JSON.stringify({ content: response, bot: true, users: [socket.userid, socket.chat] })
+                body: JSON.stringify({ content: response, bot: true, users: [socket.userid, socket.chat, 0] })
             });
             socket.emit("message", {
                 currentChat: true,
