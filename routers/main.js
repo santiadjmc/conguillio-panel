@@ -2,6 +2,7 @@ const { Router } = require('express');
 const data = require('../data/data');
 const db = require('../mysql/db');
 const utils = require('../utils');
+const Log = require('../logs');
 const router = Router();
 
 function onlyAuth(req, res, next) {
@@ -125,19 +126,7 @@ router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => 
     if (!user[0]) {
         return next();
     }
-    let messages = await db.query(`SELECT * FROM messages`);
-    messages = messages.filter(msg => {
-        if ((function () {
-            const keys = ["user_id", "target_id"];
-            if (keys.every(k => [id, req.user.id, 0].includes(msg[k]))) {
-                if (msg.user_id === 0 && !(msg.users_id.trim().split(",")).every(u => [id, req.user.id].includes(Number(u)))) return false;
-                if (!(msg.user_id === id && msg.target_id === req.user.id) && !(msg.user_id === req.user.id && msg.target_id === id)) return false;
-                return true;
-            }
-        })()) {
-            return msg;
-        }
-    });
+    let messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = 0`, [id, req.user.id, id]);
     messages.forEach(msg => {
         if (msg.user_id === req.user.id) {
             msg.isOwn = true;
