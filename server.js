@@ -88,7 +88,7 @@ app.use("*", (req, res, next) => {
 // Server
 const server = app.listen(app.get('port'), async () => {
     Log.success(`server`, `Server started on port ${app.get('port')}`);
-    await db.query("UPDATE users SET status = 'offline' WHERE id != 0");
+    await db.query("UPDATE users SET status = 'offline' WHERE id != 0"); // Set all users to offline
     const filterAiHistory = (await db.query("SELECT * FROM ai_history")).filter(h => h.content.length >= 60000);
     if (filterAiHistory.length > 0) {
         let deletedHistory = 0;
