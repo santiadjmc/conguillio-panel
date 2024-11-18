@@ -9,22 +9,30 @@ const md = new MarkdownIt({
     typographer: true,
 }).use(require('markdown-it-highlightjs')).use(require('markdown-it-named-code-blocks'), { isEnableInlineCss: true });
 const utils = {
-    encryptWithAES: (key, data) => {
-        const cipher = Crypto.createCipher('aes-256-cbc', key);
-        let crypted = cipher.update(data, 'utf8', 'hex');
-        crypted += cipher.final('hex');
-        return crypted;
+    encryptWithAES: (key, text) => {
+        if (![16, 24, 32].includes(key.length)) {
+            throw new Error(`Invalid key length. Key must be 16, 24, or 32 bytes. Recevied ${key.length} bytes.`);
+        }
+        const iv = Crypto.randomBytes(16);
+        const cipher = Crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+        let encrypted = cipher.update(text);
+        encrypted = Buffer.concat([encrypted, cipher.final()]);
+        return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
     },
-    decryptWithAES: (key, data) => {
-        try {
-            const decipher = Crypto.createDecipher('aes-256-cbc', key);
-            let dec = decipher.update(data, 'hex', 'utf8');
-            dec += decipher.final('utf8');
-            return dec;
+    decryptWithAES: (key, text) => {
+        if (![16, 24, 32].includes(key.length)) {
+            throw new Error(`Invalid key length. Key must be 16, 24, or 32 bytes. Recevied ${key.length} bytes.`);
         }
-        catch (err) {
-            return null;
-        }
+        console.log(`[!] Decrypting: ${text}`);
+        const textParts = text.split(':');
+        console.log(`[!] Text parts: ${textParts}`);
+        console.log(textParts, typeof textParts);
+        const iv = Buffer.from(textParts.shift(), 'hex');
+        const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+        const decipher = Crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+        let decrypted = decipher.update(encryptedText);
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
+        return decrypted.toString();
     },
     convertToArray: (map) => {
         let array = [];
