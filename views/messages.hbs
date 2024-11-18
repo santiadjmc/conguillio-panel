@@ -27,13 +27,17 @@
     <div class="chat-input">
         <input type="text" class="chat-input-text" placeholder="Envia un mensaje a @{{target.username}}"
             autocomplete="off" autofocus id="chat-input-text">
-        <button type="button" class="chat-input-button">
+        <button type="button" class="chat-input-button" id="chat-input-button">
             <i class="fas fa-paper-plane"></i>
         </button>
         <label class="switch" id="ai-label">
             <input type="checkbox" class="chk" id="ai-input-btn">
             <span class="slider"></span>
         </label>
+        <!-- Voice input -->
+        <button type="button" class="chat-input-button" id="voice-input">
+            <i class="fas fa-microphone"></i>
+        </button>
     </div>
 </div>
 <div id="back-to-top">
@@ -109,10 +113,10 @@
     socket.emit("set-chat", "{{target.id}}");
     $(".chat-input-text").keypress(function (e) {
         if (e.which == 13) {
-            $(".chat-input-button").click();
+            $("#chat-input-button").click();
         }
     });
-    $(".chat-input-button").click(async function () {
+    $("#chat-input-button").click(async function () {
         const text = $(".chat-input-text").val();
         if (text.length > 0) {
             $(".chat-input-text").val('');
@@ -200,7 +204,7 @@
                             return;
                         }
                         else {
-                            const current = await (data.content.slice(0, currentIndex));
+                            const current = data.content.slice(0, currentIndex);
                             $(`#ai-${ai_msg_id} content`).html(current);
                             currentIndex += 1;
                         }
@@ -229,6 +233,15 @@
             ai_status = true;
             displayModal("Sucess", "La IA ha sido activada.");
         }
+    });
+    $("#voice-input").click(async function () {
+        $("#chat-input-text").attr("disabled", true);
+        const result = await utils.getVoiceInput();
+        if (result) {
+            $(".chat-input-text").val(result);
+            $("#chat-input-button").click();
+        }
+        $("#chat-input-text").attr("disabled", false);
     });
     window.addEventListener("focus", () => {
         const lastUnread = unreadMessages;
