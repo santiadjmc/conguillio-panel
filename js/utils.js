@@ -90,5 +90,15 @@ const utils = {
             }
         }
         return true;
+    },
+    getVoiceInput: () => {
+        return new Promise((resolve, reject) => {
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "es-US";
+            recognition.start();
+            recognition.onresult = event => {
+                resolve(event.results[0][0].transcript);
+            }
+        });
     }
 }
