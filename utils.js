@@ -23,10 +23,7 @@ const utils = {
         if (![16, 24, 32].includes(key.length)) {
             throw new Error(`Invalid key length. Key must be 16, 24, or 32 bytes. Recevied ${key.length} bytes.`);
         }
-        console.log(`[!] Decrypting: ${text}`);
         const textParts = text.split(':');
-        console.log(`[!] Text parts: ${textParts}`);
-        console.log(textParts, typeof textParts);
         const iv = Buffer.from(textParts.shift(), 'hex');
         const encryptedText = Buffer.from(textParts.join(':'), 'hex');
         const decipher = Crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
