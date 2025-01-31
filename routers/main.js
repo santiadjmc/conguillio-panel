@@ -126,7 +126,7 @@ router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => 
     if (!user[0]) {
         return next();
     }
-    let messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = 0`, [id, req.user.id, id]);
+    let messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = 0 OR user_id = ? AND target_id = ?`, [id, req.user.id, id, req.user.id, id]);
     messages.forEach(msg => {
         if (msg.user_id === req.user.id) {
             msg.isOwn = true;
