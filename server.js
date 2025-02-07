@@ -74,6 +74,12 @@ app.engine('.hbs', hbs.engine({
     layoutsDir: path.join(__dirname, 'views', 'layouts'),
     defaultLayout: "main",
     extname: '.hbs',
+    helpers: {
+        formatDate: function(dateString) {
+            const date = new Date(dateString);
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${(date.getMinutes() + "").padStart(2, "0")}`;
+        }
+    }
 }));
 
 // Routes
@@ -259,26 +265,79 @@ io.on("connection", async socket => {
             });
             return;
         }
+
+        // Get full user data for the sender
         const user = await db.query(`SELECT * FROM users WHERE id = ?`, [data.user]);
+        if (!user[0]) return;
         delete user[0].password;
-        if (targetSocket.chat !== data.user) {
-            targetSocket.emit("message", {
-                currentChat: false,
-                content: data.content,
-                user: user[0]
+
+        const messageContent = utils.removeXSS(data.content);
+        
+        // Ensure message is stored in database before sending to sockets
+        try {
+            const response = await fetch(`http://localhost:${app.get('port')}/api/users/${data.target}/messages`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "User " + data.user
+                },
+                body: JSON.stringify({ 
+                    content: messageContent, 
+                    frontEndMsgId: data.frontEndMsgId 
+                })
             });
-        }
-        else {
-            targetSocket.emit("typing", {
+
+            if (!response.ok) {
+                socket.emit("message", {
+                    currentChat: true,
+                    content: "Error al enviar el mensaje",
+                    user: {
+                        username: "BarnieBot",
+                        avatar: "/img/barnie_avatar.png",
+                        name: "BarnieBot"
+                    },
+                    error: true
+                });
+                return;
+            }
+
+            // Send to target user
+            targetSocket?.emit("message", {
+                currentChat: targetSocket.chat === data.user,
+                content: messageContent,
                 user: user[0],
-                isTyping: false
+                frontEndMsgId: data.frontEndMsgId
             });
-            targetSocket.emit("message", {
+
+            // Send confirmation back to sender if not already handled by the frontend
+            if (!data.frontEndMsgId) {
+                socket.emit("message", {
+                    currentChat: true,
+                    content: messageContent,
+                    user: user[0],
+                    frontEndMsgId: Date.now()
+                });
+            }
+        } catch (error) {
+            console.error('Error storing message:', error);
+            socket.emit("message", {
                 currentChat: true,
-                content: data.content,
-                user: user[0]
+                content: "Error al enviar el mensaje",
+                user: {
+                    username: "BarnieBot",
+                    avatar: "/img/barnie_avatar.png",
+                    name: "BarnieBot"
+                },
+                error: true
             });
+            return;
         }
+
+        // Clear typing indicator
+        targetSocket?.emit("typing", {
+            user: user[0],
+            isTyping: false
+        });
     });
     socket.on("get-message-content", async id => {
         const msg = await db.query("SELECT * FROM messages WHERE id = ?", [id]);

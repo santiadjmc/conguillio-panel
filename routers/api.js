@@ -22,27 +22,30 @@ router.use(RateLimit.ratelimit);
 async function restricted(req, res, next) {
     const authorization = req.headers.authorization;
     if (!authorization) {
-        return res.status(401).send({
+        return res.status(401).json({
             message: 'Unauthorized',
             status: 401
         });
     }
-    const id = authorization.split(' ')[1];
-    const authType = authorization.split(' ')[0];
+    const [authType, id] = authorization.split(' ');
     const allowedTypes = ["User"];
+    
     if (!allowedTypes.includes(authType)) {
-        return res.status(401).send({
+        return res.status(401).json({
             message: 'Unauthorized',
             status: 401
         });
     }
+    
     const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
     if (!user[0]) {
-        return res.status(401).send({
+        return res.status(401).json({
             message: 'Unauthorized',
             status: 401
         });
     }
+    
+    req.user = user[0]; // Set the user object in the request
     return next();
 }
 
@@ -92,23 +95,135 @@ router.post("/users/new", restricted, async (req, res) => {
 
 router.post("/users/:id/messages", restricted, async (req, res, next) => {
     const { id } = req.params;
-    const userRequesting = req.body.bot ? [{ id: 0 }] : await db.query(`SELECT * FROM users WHERE id = ?`, [req.user.id ?? req.headers.authorization.split(' ')[1]]);
-    const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
-    if (!user[0]) {
-        return next();
+    const userRequesting = req.body.bot ? [{ id: 0 }] : [{ id: req.user.id }];
+    const targetUser = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
+    
+    if (!targetUser[0]) {
+        return res.status(404).json({
+            status: 404,
+            message: "Target user not found"
+        });
     }
-    const messageData = {
-        target_id: user[0].id,
-        user_id: userRequesting[0].id,
-        content: utils.encryptWithAES(data.server.encryptionKey, req.body.bot ? req.body.content : utils.removeXSS(req.body.content)),
-        users_id: req.body.bot ? req.body.users.join(",") : `${userRequesting[0].id},${user[0].id}`,
-        frontend_msg_id: req.body.frontEndMsgId
+    
+    try {
+        const messageData = {
+            target_id: targetUser[0].id,
+            user_id: userRequesting[0].id,
+            content: utils.encryptWithAES(data.server.encryptionKey, req.body.bot ? req.body.content : utils.removeXSS(req.body.content)),
+            users_id: req.body.bot ? req.body.users.join(",") : `${userRequesting[0].id},${targetUser[0].id}`,
+            frontend_msg_id: req.body.frontEndMsgId,
+            created_at: new Date()
+        };
+
+        await db.query("START TRANSACTION");
+        
+        // Insert original message
+        const result = await db.query("INSERT INTO messages SET ?", messageData);
+        
+        // Also create a reciprocal message entry to ensure visibility for both users
+        if (!req.body.bot) {
+            const reciprocalMessage = {
+                ...messageData,
+                target_id: userRequesting[0].id,
+                user_id: targetUser[0].id,
+                frontend_msg_id: `${messageData.frontend_msg_id}_reciprocal`
+            };
+            await db.query("INSERT INTO messages SET ?", reciprocalMessage);
+        }
+        
+        // Update AI history if needed
+        if (req.body.bot && req.body.users?.length > 0) {
+            const targetUserId = req.body.users[0];
+            await db.query(`UPDATE users SET status = 'online' WHERE id = ?`, [targetUserId]);
+        }
+        
+        await db.query("COMMIT");
+
+        res.json({
+            status: 200,
+            message: "Message stored",
+            messageId: result.insertId
+        });
+    } catch (error) {
+        await db.query("ROLLBACK");
+        console.error("Error storing message:", error);
+        res.status(500).json({
+            status: 500,
+            message: "Error storing message"
+        });
     }
-    await db.query("INSERT INTO messages SET ?", messageData);
-    res.json({
-        status: 200,
-        message: "Message stored"
-    });
+});
+
+router.get("/users/:id/messages", restricted, async (req, res) => {
+    const { id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 100;
+    const offset = (page - 1) * limit;
+
+    try {
+        const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
+        if (!user[0]) {
+            return res.status(404).json({
+                status: 404,
+                message: "User not found"
+            });
+        }
+
+        // Get messages with pagination
+        let messages = await db.query(`
+            SELECT * FROM messages 
+            WHERE (
+                (target_id = ? AND user_id = ?) OR 
+                (target_id = ? AND user_id = 0) OR 
+                (user_id = ? AND target_id = ?)
+            )
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?
+        `, [id, req.user.id, id, req.user.id, id, limit, offset]);
+
+        // Process messages
+        messages = messages.map(msg => {
+            if (msg.user_id === req.user.id) {
+                return {
+                    ...msg,
+                    isOwn: true,
+                    username: req.user.username,
+                    avatar: req.user.avatar,
+                    name: req.user.name
+                };
+            } else if (msg.user_id === 0) {
+                return {
+                    ...msg,
+                    isOwn: false,
+                    username: "BarnieBot",
+                    avatar: "/img/barnie_avatar.png",
+                    name: "BarnieBot"
+                };
+            } else {
+                return {
+                    ...msg,
+                    isOwn: false,
+                    username: user[0].username,
+                    avatar: user[0].avatar,
+                    name: user[0].name
+                };
+            }
+        });
+
+        // Decrypt messages content
+        messages = utils.decryptMessages(messages);
+
+        res.json({
+            status: 200,
+            messages: messages
+        });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({
+            status: 500,
+            message: "Error fetching messages"
+        });
+    }
 });
 
 router.post("/trash/data", restricted, async (req, res) => {

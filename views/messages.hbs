@@ -11,19 +11,29 @@
 
     <main class="chat">
         <div class="chat-messages">
-            {{#each messages}}
-            <div class="chat-message {{#if this.isOwn}}own{{/if}}">
-                <img class="chat-message-avatar" src="{{this.avatar}}" alt="{{this.name}}" loading="lazy">
-                <div class="chat-message-content">
-                    <div class="chat-message-header">
-                        <span class="chat-message-author">{{this.username}}</span>
+            {{#if messages.length}}
+                <button class="load-more-btn" id="load-more-messages">Cargar mensajes anteriores</button>
+                <div class="messages-container">
+                    {{#each messages}}
+                    <div class="chat-message {{#if this.isOwn}}own{{/if}}">
+                        <img class="chat-message-avatar" src="{{this.avatar}}" alt="{{this.name}}" loading="lazy">
+                        <div class="chat-message-content">
+                            <div class="chat-message-header">
+                                <span class="chat-message-author">{{this.username}}</span>
+                                <span class="message-timestamp">{{formatDate this.created_at}}</span>
+                            </div>
+                            <div class="chat-message-text" id="cnt-{{this.id}}">
+                                {{{this.content}}}
+                            </div>
+                        </div>
                     </div>
-                    <div class="chat-message-text" id="cnt-{{this.id}}">
-                        {{{this.content}}}
-                    </div>
+                    {{/each}}
                 </div>
-            </div>
-            {{/each}}
+            {{else}}
+                <div class="no-messages">
+                    <p>No hay mensajes aún. ¡Sé el primero en escribir!</p>
+                </div>
+            {{/if}}
         </div>
 
         <footer class="chat-input">
@@ -444,6 +454,96 @@
         }
         document.getElementById("status-data").className = `user-status-text ${userStatus}-status`;
     });
+
+    let currentPage = 1;
+    const messagesPerPage = 100;
+    let isLoadingMore = false;
+    let hasMoreMessages = true;
+
+    async function loadMoreMessages() {
+        if (isLoadingMore || !hasMoreMessages) return;
+        
+        isLoadingMore = true;
+        $("#load-more-messages").text("Cargando...");
+        
+        try {
+            const response = await fetch(`/api/users/{{target.id}}/messages?page=${currentPage + 1}`, {
+                headers: {
+                    'Authorization': 'User {{user.id}}'
+                }
+            });
+            
+            const data = await response.json();
+            if (data.messages && data.messages.length > 0) {
+                currentPage++;
+                
+                // Prepend messages to container
+                const messagesHtml = data.messages.map(msg => {
+                    const messageClass = msg.isOwn ? 'chat-message own' : 'chat-message';
+                    return `
+                        <div class="${messageClass}">
+                            <img class="chat-message-avatar" src="${msg.avatar}" alt="${msg.name}" loading="lazy">
+                            <div class="chat-message-content">
+                                <div class="chat-message-header">
+                                    <span class="chat-message-author">${msg.username}</span>
+                                    <span class="message-timestamp">${formatDate(msg.created_at)}</span>
+                                </div>
+                                <div class="chat-message-text" id="cnt-${msg.id}">
+                                    ${msg.content}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                $('.messages-container').prepend(messagesHtml);
+                
+                // Hide load more button if no more messages
+                if (data.messages.length < messagesPerPage) {
+                    hasMoreMessages = false;
+                    $("#load-more-messages").hide();
+                }
+            } else {
+                hasMoreMessages = false;
+                $("#load-more-messages").hide();
+            }
+        } catch (error) {
+            console.error('Error loading more messages:', error);
+            displayModal("Error", "No se pudieron cargar más mensajes");
+        } finally {
+            isLoadingMore = false;
+            $("#load-more-messages").text("Cargar mensajes anteriores");
+        }
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${(date.getMinutes() + "").padStart(2, "0")}`;
+    }
+
+    // Load more messages when clicking the button
+    $("#load-more-messages").click(loadMoreMessages);
+
+    // Preserve scroll position when loading more messages
+    let lastScrollHeight = 0;
+    const chatMessages = document.querySelector('.chat-messages');
+    
+    const observer = new MutationObserver(() => {
+        const newScrollHeight = chatMessages.scrollHeight;
+        const scrollDiff = newScrollHeight - lastScrollHeight;
+        if (scrollDiff > 0 && lastScrollHeight > 0) {
+            chatMessages.scrollTop += scrollDiff;
+        }
+        lastScrollHeight = newScrollHeight;
+    });
+
+    observer.observe(chatMessages, {
+        childList: true,
+        subtree: true
+    });
+
+    // Initialize last scroll height
+    lastScrollHeight = chatMessages.scrollHeight;
 </script>
 <style>
     .data {
@@ -1167,5 +1267,45 @@
 
     .switch input:focus-visible + .slider {
         box-shadow: 0 0 0 2px var(--secondary-blue);
+    }
+
+    .load-more-btn {
+        display: block;
+        margin: 10px auto;
+        padding: 8px 16px;
+        background: var(--dark-surface);
+        color: var(--text-primary);
+        border: 1px solid var(--secondary-blue);
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        opacity: 0.8;
+    }
+
+    .load-more-btn:hover {
+        background: var(--primary-blue);
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+
+    .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .message-timestamp {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-left: 8px;
+    }
+
+    .no-messages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        color: var(--text-secondary);
+        font-style: italic;
     }
 </style>

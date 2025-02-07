@@ -127,33 +127,44 @@ router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => 
     if (!user[0]) {
         return next();
     }
-    let messages = await db.query(`SELECT * FROM messages WHERE target_id = ? AND user_id = ? OR target_id = ? AND user_id = 0 OR user_id = ? AND target_id = ?`, [id, req.user.id, id, req.user.id, id]);
-    messages.forEach(msg => {
-        if (msg.user_id === req.user.id) {
-            msg.isOwn = true;
-            msg.username = req.user.username;
-            msg.avatar = req.user.avatar;
-            msg.name = req.user.name;
-        }
-        else if (msg.user_id === 0) {
-            msg.isOwn = false;
-            msg.username = "BarnieBot";
-            msg.avatar = "/img/barnie_avatar.png";
-            msg.name = "BarnieBot";
-        }
-        else {
-            msg.isOwn = false;
-            msg.username = user[0].username;
-            msg.avatar = user[0].avatar;
-            msg.name = user[0].name;
-        }
-    });
+    
+    // Updated query to properly fetch messages for both participants
+    let messages = await db.query(`
+        SELECT m.*, 
+               u.username as sender_username, 
+               u.avatar as sender_avatar, 
+               u.name as sender_name
+        FROM messages m
+        LEFT JOIN users u ON m.user_id = u.id
+        WHERE (
+            (m.target_id = ? AND m.user_id = ?) OR 
+            (m.target_id = ? AND m.user_id = ?) OR
+            (m.user_id = 0 AND (m.target_id = ? OR m.target_id = ?))
+        )
+        ORDER BY m.created_at DESC
+        LIMIT 100
+    `, [id, req.user.id, req.user.id, id, id, req.user.id]);
+
+    // Process messages
+    messages = messages.map(msg => ({
+        ...msg,
+        content: utils.decryptWithAES(data.server.encryptionKey, msg.content),
+        isOwn: msg.user_id === req.user.id,
+        username: msg.user_id === 0 ? "BarnieBot" : (msg.user_id === req.user.id ? req.user.username : msg.sender_username),
+        avatar: msg.user_id === 0 ? "/img/barnie_avatar.png" : (msg.user_id === req.user.id ? req.user.avatar : msg.sender_avatar),
+        name: msg.user_id === 0 ? "BarnieBot" : (msg.user_id === req.user.id ? req.user.name : msg.sender_name)
+    }));
+
+    // Reverse messages to show oldest first
+    messages = messages.reverse();
+
     res.render("messages", {
         title: `${user[0].username}`,
         target: user[0],
-        messages: JSON.parse(JSON.stringify(utils.decryptMessages(messages))),
+        messages: messages
     });
 });
+
 router.get("/dashboard/trash/add", onlyAuth, (req, res) => {
     res.render("trash_register", {
         title: "Registra basura"
