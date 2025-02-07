@@ -1,118 +1,94 @@
 <!-- 404 view -->
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="error-template">
-                <h1>
-                    Oops!</h1>
-                <h2>
-                    404 Not Found</h2>
-                <div class="error-details">
-                    Sorry, an error has occured, Requested page not found!
-                </div>
-                <button class="learn-more" onclick="location.replace('/')">
-                    <span class="circle" aria-hidden="true">
-                        <span class="icon arrow"></span>
-                    </span>
-                    <span class="button-text">Go back</span>
-                </button>
-            </div>
-        </div>
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Página no encontrada</h1>
+        <p class="error-message">La página que estás buscando no existe o ha sido movida</p>
+        <a href="/dashboard" class="back-button">
+            <i class="fas fa-home"></i>
+            <span>Volver al inicio</span>
+        </a>
     </div>
 </div>
-</div>
-</div>
+
 <style>
-    .error-template {
-        padding: 40px 15px;
-        text-align: center;
+    .error-container {
+        min-height: calc(100vh - 56px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(26,35,126,0.1) 0%, rgba(40,53,147,0.1) 100%);
     }
 
-    button {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-        outline: none;
-        border: 0;
-        vertical-align: middle;
+    .error-content {
+        text-align: center;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .error-code {
+        font-size: 8rem;
+        font-weight: bold;
+        color: var(--primary-blue);
+        text-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .error-title {
+        font-size: 2rem;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+    }
+
+    .error-message {
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--text-primary);
         text-decoration: none;
-        background: transparent;
-        padding: 0;
-        font-size: inherit;
-        font-family: inherit;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
     }
 
-    button.learn-more {
-        width: 12rem;
-        height: auto;
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(26,35,126,0.3);
     }
 
-    button.learn-more .circle {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        position: relative;
-        display: block;
-        margin: 0;
-        width: 3rem;
-        height: 3rem;
-        background: #282936;
-        border-radius: 1.625rem;
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    button.learn-more .circle .icon {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        background: #fff;
-    }
+    @media (max-width: 768px) {
+        .error-code {
+            font-size: 6rem;
+        }
 
-    button.learn-more .circle .icon.arrow {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        left: 0.625rem;
-        width: 1.125rem;
-        height: 0.125rem;
-        background: none;
-    }
+        .error-title {
+            font-size: 1.5rem;
+        }
 
-    button.learn-more .circle .icon.arrow::before {
-        position: absolute;
-        content: "";
-        top: -0.29rem;
-        right: 0.0625rem;
-        width: 0.625rem;
-        height: 0.625rem;
-        border-top: 0.125rem solid #fff;
-        border-right: 0.125rem solid #fff;
-        transform: rotate(45deg);
-    }
-
-    button.learn-more .button-text {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: 0.75rem 0;
-        margin: 0 0 0 1.85rem;
-        color: #282936;
-        font-weight: 700;
-        line-height: 1.6;
-        text-align: center;
-        text-transform: uppercase;
-    }
-
-    button:hover .circle {
-        width: 100%;
-    }
-
-    button:hover .circle .icon.arrow {
-        background: #fff;
-        transform: translate(1rem, 0);
-    }
-
-    button:hover .button-text {
-        color: #fff;
+        .error-message {
+            font-size: 1rem;
+        }
     }
 </style>

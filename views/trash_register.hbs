@@ -1,59 +1,193 @@
-<div class="container">
-    <button class="btn btn-primary" id="add-item-btn">Agregar item</button>
-    <button class="btn btn-success" id="submit-btn">Guardar</button>
-</div>
-<center>
-    <div class="container" id="items-container">
-        <div class="card">
-            <div class="card-header">
+<div class="trash-container">
+    <div class="actions-bar">
+        <button class="action-button primary" id="add-item-btn">
+            <i class="fa fa-plus"></i>
+            <span>Agregar item</span>
+        </button>
+        <button class="action-button success" id="submit-btn">
+            <i class="fa fa-save"></i>
+            <span>Guardar</span>
+        </button>
+    </div>
+
+    <div class="items-grid" id="items-container">
+        <div class="item-card">
+            <div class="item-header">
                 <h4>Artículo botado</h4>
             </div>
-            <div class="card-body">
-                <div>
+            <div class="item-content">
+                <div class="form-group">
                     <label for="name">Nombre del artículo</label>
-                    <input type="text" class="form-control trash-item-name" id="name" name="name" placeholder="Papel"
-                        required>
+                    <input type="text" class="trash-item-name" name="name" placeholder="Papel" required>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="quantity">Cantidad</label>
-                    <input type="number" class="form-control trash-item-quantity" id="quantity" name="quantity"
-                        placeholder="1" required>
+                    <input type="number" class="trash-item-quantity" name="quantity" placeholder="1" required>
                 </div>
             </div>
         </div>
     </div>
-</center>
+</div>
+
+<style>
+    .trash-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .actions-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 20px;
+        height: 45px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .action-button.primary {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--text-primary);
+    }
+
+    .action-button.success {
+        background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+        color: var(--text-primary);
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .item-card {
+        background-color: var(--dark-surface);
+        border: 1px solid var(--secondary-blue);
+        border-radius: 12px;
+        overflow: hidden;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .item-header {
+        background-color: var(--primary-blue);
+        padding: 16px;
+        border-bottom: 1px solid var(--secondary-blue);
+    }
+
+    .item-header h4 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .item-content {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--secondary-blue);
+        background-color: var(--dark-bg);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 2px rgba(26,35,126,0.2);
+    }
+
+    @keyframes slideIn {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .actions-bar {
+            flex-direction: column;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
 <script>
-    $("#add-item-btn").click(function () {
-        const card = document.createElement("div");
-        card.className = "card";
-        const cardHeader = document.createElement("div");
-        cardHeader.className = "card-header";
-        cardHeader.appendChild((function () { const text = document.createElement("h4"); text.innerText = "Artículo botado"; return text; })());
-        const cardBody = document.createElement("div");
-        cardBody.className = "card-body";
-        card.appendChild(cardHeader);
-        card.appendChild(cardBody);
-        cardBody.innerHTML = `<div>
+    document.getElementById("add-item-btn").addEventListener("click", function () {
+        const itemCard = document.createElement("div");
+        itemCard.className = "item-card";
+        itemCard.innerHTML = `
+            <div class="item-header">
+                <h4>Artículo botado</h4>
+            </div>
+            <div class="item-content">
+                <div class="form-group">
                     <label for="name">Nombre del artículo</label>
-                    <input type="text" class="form-control trash-item-name" id="name" name="name" placeholder="Papel"
-                        required>
+                    <input type="text" class="trash-item-name" name="name" placeholder="Papel" required>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="quantity">Cantidad</label>
-                    <input type="number" class="form-control trash-item-quantity" id="quantity" name="quantity" placeholder="1"
-                        required>
-                </div>`;
-        document.querySelector("#items-container").appendChild(card);
+                    <input type="number" class="trash-item-quantity" name="quantity" placeholder="1" required>
+                </div>
+            </div>
+        `;
+        document.getElementById("items-container").appendChild(itemCard);
     });
-    $("#submit-btn").click(async function () {
-        const items = document.querySelectorAll(".container .card .card-body");
-        const form = document.createElement("form");
+
+    document.getElementById("submit-btn").addEventListener("click", async function () {
+        const items = document.querySelectorAll(".item-card .item-content");
         for (const item of items) {
-            const [nameDiv, quantityDiv] = item.children;
-            const [name, quantity] = [nameDiv.children[1].value, Number(quantityDiv.children[1].value)];
-            if (!utils.checkFields(name, quantity)) return displayModal("Error", "Debes rellenar todos los campos");
-            const rsp = await fetch("/api/trash/data", {
+            const nameInput = item.querySelector(".trash-item-name");
+            const quantityInput = item.querySelector(".trash-item-quantity");
+            const name = nameInput.value;
+            const quantity = Number(quantityInput.value);
+
+            if (!name || !quantity) {
+                displayModal("Error", "Debes rellenar todos los campos");
+                return;
+            }
+
+            const response = await fetch("/api/trash/data", {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json",
@@ -65,13 +199,15 @@
                     uid: "{{user.id}}"
                 })
             });
-            const json = await rsp.json();
-            if (json.status > 399) {
+
+            const data = await response.json();
+            if (data.status > 399) {
                 displayModal("Error", "Oops, hubo un error al subir los datos, intenta más tarde.");
-                console.log(`ERR: ${json.status} || ${json.message}`);
+                console.error(`Error: ${data.status} || ${data.message}`);
                 return;
             }
         }
+
         displayModal("¡Bien!", "¡Hemos registrado la basura que has botado! Serás redirigido a tu perfil en 3 segundos.");
         setTimeout(() => { window.location.href = "/dashboard/profile" }, 3000);
     });

@@ -55,9 +55,10 @@ router.get("/dashboard/users/:id/profile", onlyAuth, async (req, res, next) => {
     if (!user[0]) {
         return next();
     }
+    delete user[0].password;
     res.render("userprofile", {
         title: `${user[0].username}`,
-        target: user[0],
+        profile: user[0],
     });
 });
 

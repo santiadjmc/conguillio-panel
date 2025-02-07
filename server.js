@@ -22,6 +22,15 @@ const { default: fetch } = require("node-fetch");
 const RateLimit = new RateLimitManager(100);
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY);
+
+// Load commands
+const commands = new Map();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    commands.set(command.name, command);
+}
+
 function genRandomString(length) {
     const chars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
     let result = "";
@@ -153,6 +162,43 @@ io.on("connection", async socket => {
                 targetSocket = s;
             }
         });
+        
+        // Check if message is a command
+        if (data.content.startsWith('!')) {
+            const args = data.content.slice(1).split(' ');
+            const commandName = args.shift().toLowerCase();
+            
+            if (commands.has(commandName)) {
+                const command = commands.get(commandName);
+                try {
+                    await command.execute({
+                        socket,
+                        targetSocket,
+                        content: args.join(' '),
+                        userid: socket.userid,
+                        chat: socket.chat,
+                        io,
+                        db,
+                        utils,
+                        data
+                    });
+                    return;
+                } catch (error) {
+                    console.error(`Error executing command ${commandName}:`, error);
+                    socket.emit("message", {
+                        currentChat: true,
+                        content: "Hubo un error al ejecutar el comando.",
+                        user: {
+                            username: "BarnieBot",
+                            avatar: "/img/barnie_avatar.png",
+                            name: "BarnieBot"
+                        }
+                    });
+                    return;
+                }
+            }
+        }
+
         if (!targetSocket && data.target !== "0") return;
         if (data.target === "0") {
             if (!socket.userid) return socket.emit("reload");

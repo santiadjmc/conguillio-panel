@@ -1,292 +1,289 @@
-<div class="data">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <i class="fa fa-fw fa-user"></i>
-                            Perfil de {{target.username}}
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="text-center">
-                                    <img src="{{ target.avatar }}" class="avatar img-circle" alt="avatar"
-                                        id="avatar-field">
-                                    <br><br>
-                                    <div class="btn-group" role="group" aria-label="Actions">
-                                        {{#if user.admin}}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-cover">
+            <div class="profile-avatar-wrapper">
+                <img src="{{profile.avatar}}" alt="{{profile.name}}" class="profile-avatar">
+                <div class="profile-status {{profile.status}}-status"></div>
+            </div>
+        </div>
+        
+        <div class="profile-info">
+            <h1 class="profile-name">{{profile.name}}</h1>
+            <p class="profile-username">@{{profile.username}}</p>
+            
+            <div class="profile-details">
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{profile.email}}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>{{#if profile.admin}}Administrador{{else}}Usuario{{/if}}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Se unió el {{profile.joined}}</span>
+                </div>
+            </div>
 
-                                        <button class="noselect" id="delete-user-btn"><span
-                                                class="text">Delete</span><span class="icon"><svg
-                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                    viewBox="0 0 24 24">
-                                                    <path
-                                                        d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z">
-                                                    </path>
-                                                </svg></span></button>
-                                        {{/if}}
-                                        <button class="learn-more" id="send-msg-btn">
-                                            <span class="circle" aria-hidden="true">
-                                                <span class="icon arrow"></span>
-                                            </span>
-                                            <span class="button-text">Send message</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-9 personal-info">
-                                <h3>Info personal</h3>
-                                <form class="form-horizontal" role="form">
-                                    <div class="form-group">
-                                        <label class="col-lg-3 control-label">Email:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="text" value="{{ target.email }}" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-lg-3 control-label">Username:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="text" value="{{ target.username }}"
-                                                disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="mb-3">
-                                            <label for="trash-logs-area" class="form-label">Registros</label>
-                                            <textarea class="form-control" id="trash-logs-area" rows="3"
-                                                disabled>Cargando...</textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+            <div class="profile-actions">
+                {{#if currentUser.admin}}
+                <a href="/dashboard/users/{{profile.id}}/edit" class="action-button primary">
+                    <i class="fas fa-edit"></i>
+                    <span>Editar usuario</span>
+                </a>
+                {{/if}}
+                <button class="action-button chat" onclick="window.location.href='/dashboard/users/{{profile.id}}/messages'">
+                    <i class="fas fa-comment"></i>
+                    <span>Enviar mensaje</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-logs">
+            <h3>Registros de basura</h3>
+            <div class="logs-container" id="logs-area">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <span>Cargando registros...</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <style>
-    .avatar {
+    .profile-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .profile-card {
+        background-color: var(--dark-surface);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .profile-cover {
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        position: relative;
+    }
+
+    .profile-avatar-wrapper {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%, 50%);
+    }
+
+    .profile-avatar {
         width: 150px;
         height: 150px;
         border-radius: 50%;
-    }
-</style>
-{{#if user.admin }}
-<script>
-    $("#delete-user-btn").click(async function () {
-        displayInteractiveModal("Eliminar usuario", "¿Estás seguro de que quieres eliminar a este usuario?", {
-            className: "btn btn-secondary",
-            text: "Cancelar",
-            onclick: null
-        }, {
-            className: "btn btn-danger",
-            text: "Eliminar",
-            onclick: async () => {
-                const response = await fetch("/api/users/{{target.id}}", {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "authorization": "User {{ user.id }}"
-                    },
-                    body: JSON.stringify({
-                        target: Number("{{ target.id }}")
-                    })
-                });
-                if (response.status > 399) {
-                    displayModal("Error", "No se pudo eliminar al usuario.");
-                }
-                else {
-                    window.location.href = "/dashboard/users";
-                }
-            }
-        });
-    });
-</script>
-{{/if}}
-<script>
-    $("#send-msg-btn").click(() => {
-        window.location.href = "/dashboard/users/{{target.id}}/messages";
-    });
-    $(window).ready(async function () {
-        const jelement = $("#trash-logs-area");
-        const uid = "{{target.id}}";
-        const rsp = await fetch(`/api/users/${uid}/trash/data/`, {
-            method: "GET",
-            headers: {
-                'Authorization': 'User {{user.id}}'
-            }
-        });
-        const data = await rsp.json();
-        if (data.status > 399) {
-            jelement.text("Error al cargar los registros.");
-        }
-        else {
-            jelement.text(data.logs.map(d => {
-                const date = new Date(d.date);
-                const dateString = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${(date.getMinutes() + "").padStart(2, "0")}`;
-                return `${d.data} [${dateString}]`;
-            }).join("\n"));
-            if (data.logs.length === 0) {
-                jelement.text("No hay registros.");
-            }
-        }
-    });
-</script>
-<style>
-    #delete-user-btn {
-        width: 150px;
-        height: 40px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        background: red;
-        border: none;
-        border-radius: 5px;
-        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
-        background: #e62222;
-        transform: translateX(-50px) translateY(5px);
+        border: 4px solid var(--dark-surface);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        object-fit: cover;
     }
 
-    #delete-user-btn,
-    #delete-user-btn span {
-        transition: 200ms;
-    }
-
-    #delete-user-btn .text {
-        transform: translateX(35px);
-        color: white;
-        font-weight: bold;
-    }
-
-    #delete-user-btn .icon {
+    .profile-status {
         position: absolute;
-        border-left: 1px solid #c41b1b;
-        transform: translateX(110px);
-        height: 40px;
-        width: 40px;
+        bottom: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid var(--dark-surface);
+    }
+
+    .online-status {
+        background-color: var(--success-green);
+    }
+
+    .offline-status {
+        background-color: var(--error-red);
+    }
+
+    .profile-info {
+        padding: 90px 30px 30px;
+        text-align: center;
+    }
+
+    .profile-name {
+        font-size: 1.8rem;
+        color: var(--text-primary);
+        margin-bottom: 5px;
+    }
+
+    .profile-username {
+        color: var(--text-secondary);
+        margin-bottom: 25px;
+    }
+
+    .profile-details {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .detail-item {
         display: flex;
         align-items: center;
+        gap: 10px;
+        color: var(--text-primary);
+    }
+
+    .detail-item i {
+        width: 20px;
+        color: var(--text-secondary);
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 12px;
         justify-content: center;
     }
 
-    #delete-user-btn svg {
-        width: 15px;
-        fill: #eee;
-    }
-
-    #delete-user-btn:hover {
-        background: #ff3636;
-    }
-
-    #delete-user-btn:hover .text {
-        color: transparent;
-    }
-
-    #delete-user-btn:hover .icon {
-        width: 150px;
-        border-left: none;
-        transform: translateX(0);
-    }
-
-    #delete-user-btn:focus {
-        outline: none;
-    }
-
-    #delete-user-btn:active .icon svg {
-        transform: scale(0.8);
-    }
-
-    #send-msg-btn {
-        position: relative;
-        display: inline-block;
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
         cursor: pointer;
-        outline: none;
-        border: 0;
-        vertical-align: middle;
+        transition: all 0.3s ease;
         text-decoration: none;
-        background: transparent;
-        padding: 0;
-        font-size: inherit;
-        font-family: inherit;
-        transform: translateX(-49px);
     }
 
-    #send-msg-btn {
-        width: 12rem;
-        height: auto;
+    .action-button.primary {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--text-primary);
     }
 
-    #send-msg-btn .circle {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        position: relative;
-        display: block;
-        margin: 0;
-        width: 3rem;
-        height: 3rem;
-        background: #282936;
-        border-radius: 1.625rem;
+    .action-button.chat {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--text-primary);
+        border: none;
     }
 
-    #send-msg-btn .circle .icon {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        background: #fff;
+    .action-button.chat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        opacity: 0.9;
     }
 
-    #send-msg-btn .circle .icon.arrow {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        left: 0.625rem;
-        width: 1.125rem;
-        height: 0.125rem;
-        background: none;
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    #send-msg-btn .circle .icon.arrow::before {
-        position: absolute;
-        content: "";
-        top: -0.29rem;
-        right: 0.0625rem;
-        width: 0.625rem;
-        height: 0.625rem;
-        border-top: 0.125rem solid #fff;
-        border-right: 0.125rem solid #fff;
-        transform: rotate(45deg);
+    .profile-logs {
+        padding: 30px;
+        border-top: 1px solid var(--secondary-blue);
     }
 
-    #send-msg-btn .button-text {
-        transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: 0.75rem 0;
-        margin: 0 0 0 1.85rem;
-        color: #282936;
-        font-weight: 700;
-        line-height: 1.6;
-        text-align: center;
-        text-transform: uppercase;
+    .profile-logs h3 {
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        font-size: 1.2rem;
     }
 
-    #send-msg-btn:hover .circle {
-        width: 100%;
+    .logs-container {
+        background-color: var(--dark-bg);
+        border-radius: 8px;
+        padding: 20px;
+        min-height: 200px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
-    #send-msg-btn:hover .circle .icon.arrow {
-        background: #fff;
-        transform: translate(1rem, 0);
+    .log-entry {
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--secondary-blue);
+        white-space: pre-wrap;
+        word-break: break-word;
     }
 
-    #send-msg-btn:hover .button-text {
-        color: #fff;
+    .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        color: var(--text-secondary);
+    }
+
+    .loading i {
+        font-size: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .profile-actions {
+            flex-direction: column;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-cover {
+            height: 150px;
+        }
     }
 </style>
+
+<script>
+    $(window).ready(async function () {
+        const logsArea = document.getElementById('logs-area');
+        try {
+            const response = await fetch(`/api/users/{{profile.id}}/trash/data`, {
+                headers: {
+                    'Authorization': 'User {{currentUser.id}}'
+                }
+            });
+            const data = await response.json();
+            
+            if (data.status === 200) {
+                if (data.logs.length === 0) {
+                    logsArea.innerHTML = `
+                        <div class="no-logs">
+                            <p style="color: var(--text-secondary); text-align: center;">No hay registros disponibles</p>
+                        </div>
+                    `;
+                } else {
+                    logsArea.innerHTML = data.logs.map(log => {
+                        const date = new Date(log.date);
+                        const dateString = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+                        return `<div class="log-entry" style="color: var(--text-primary); margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--secondary-blue);">
+                            ${log.data}
+                            <div style="color: var(--text-secondary); font-size: 0.9em; margin-top: 5px;">
+                                ${dateString}
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            logsArea.innerHTML = `
+                <div class="error" style="color: var(--error-red); text-align: center;">
+                    Error al cargar los registros: ${error.message}
+                </div>
+            `;
+        }
+    });
+</script>

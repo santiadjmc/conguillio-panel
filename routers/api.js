@@ -101,7 +101,8 @@ router.post("/users/:id/messages", restricted, async (req, res, next) => {
         target_id: user[0].id,
         user_id: userRequesting[0].id,
         content: utils.encryptWithAES(data.server.encryptionKey, req.body.bot ? req.body.content : utils.removeXSS(req.body.content)),
-        users_id: req.body.bot ? req.body.users.join(",") : `${userRequesting[0].id},${user[0].id}`
+        users_id: req.body.bot ? req.body.users.join(",") : `${userRequesting[0].id},${user[0].id}`,
+        frontend_msg_id: req.body.frontEndMsgId
     }
     await db.query("INSERT INTO messages SET ?", messageData);
     res.json({

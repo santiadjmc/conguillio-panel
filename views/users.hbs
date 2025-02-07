@@ -1,90 +1,240 @@
-<div class="container">
-    <input type="text" class="search-input" placeholder="Buscar..." id="search-input" {{#if filter}} value="{{filter}}"
-        {{/if}}>
-    <button class="btn btn-secondary" id="search-submit-btn">
-        <i class="fa fa-fw fa-search"></i>
-        Buscar
-    </button>
-    {{#if user.admin}}
-    <button class="btn btn-primary" id="add-user-btn">
-        <i class="fa fa-fw fa-plus"></i>
-        Agregar
-    </button>
-    {{/if}}
-</div>
-{{#each users}}
-<div class="container" id="container-{{this.id}}">
-    <center>
-        <div class="card md-3">
-            <div class="card-header">
+<div class="users-container">
+    <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Buscar..." id="search-input" {{#if filter}}
+            value="{{filter}}" {{/if}}>
+        <button class="action-button search" id="search-submit-btn">
+            <i class="fa fa-fw fa-search"></i>
+            <span>Buscar</span>
+        </button>
+        {{#if user.admin}}
+        <button class="action-button primary" id="add-user-btn">
+            <i class="fa fa-fw fa-plus"></i>
+            <span>Agregar</span>
+        </button>
+        {{/if}}
+    </div>
+
+    <div class="users-grid">
+        {{#each users}}
+        <div class="user-card" id="container-{{this.id}}">
+            <div class="user-card-header">
                 <h4>{{this.name}}</h4>
             </div>
-            <div class="card-body">
+            <div class="user-card-body">
                 <p>{{this.email}}</p>
             </div>
-            <div class="card-footer">
-                <div class="btn-group" role="group">
-                    <a href="/dashboard/users/{{this.id}}/profile" class="btn btn-primary">
+            <div class="user-card-footer">
+                <div class="action-buttons">
+                    <a href="/dashboard/users/{{this.id}}/profile" class="action-button primary">
                         <i class="fa fa-fw fa-user"></i>
-                        Perfil
+                        <span>Perfil</span>
                     </a>
+                </div>
+                <div class="user-actions">
+                    <button class="action-button chat"
+                        onclick="window.location.href='/dashboard/users/{{this.id}}/messages'">
+                        <i class="fas fa-comment"></i>
+                        <span>Mensaje</span>
+                    </button>
                 </div>
             </div>
         </div>
-    </center>
+        {{/each}}
+    </div>
 </div>
-<br>
-{{/each}}
+
+<style>
+    .users-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .search-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: var(--dark-surface);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 200px;
+        height: 45px;
+        border-radius: 8px;
+        padding: 0 15px;
+        border: 1px solid var(--secondary-blue);
+        background-color: var(--dark-bg);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 20px;
+        height: 45px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .action-button.search {
+        background-color: var(--dark-surface);
+        color: var(--text-primary);
+        border: 1px solid var(--secondary-blue);
+    }
+
+    .action-button.primary {
+        background-color: var(--primary-blue);
+        color: var (--text-primary);
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .users-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .user-card {
+        background-color: var(--dark-surface);
+        border: 1px solid var(--secondary-blue);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .user-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(26, 35, 126, 0.3);
+    }
+
+    .user-card-header {
+        padding: 16px;
+        background-color: var(--primary-blue);
+        border-bottom: 1px solid var(--secondary-blue);
+    }
+
+    .user-card-header h4 {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .user-card-body {
+        padding: 16px;
+    }
+
+    .user-card-body p {
+        margin: 0;
+        color: var (--text-secondary);
+    }
+
+    .user-card-footer {
+        padding: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: rgba(26, 35, 126, 0.1);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .action-button.chat {
+        background-color: var(--primary-blue);
+        color: var(--text-primary);
+        border: 1px solid var(--secondary-blue);
+    }
+
+    .action-button.chat:hover {
+        background-color: var(--secondary-blue);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .search-bar {
+            flex-direction: column;
+        }
+
+        .search-input {
+            width: 100%;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
 {{#if user.admin}}
-<script>
-    $("#add-user-btn").click(function () {
-        window.location.href = "/dashboard/users/add";
-    });
-    const userContainers = document.querySelectorAll(".container");
-    userContainers.forEach(container => {
-        if (!container.id.startsWith("container-")) return;
-        $(`#container-${container.id.split("-")[1]} .card-footer .btn-group`).append(`
-        <a href="/dashboard/users/${container.id.split("-")[1]}/edit" class="btn btn-secondary">
-            <i class="fa fa-fw fa-edit"></i>
-            Editar
+<script id="add-edit-script">
+    $(".user-actions").each(function (index, element) {
+        const userId = $(element).data("user-id");
+        $(element).append(`
+            <button class="action-button" onclick="window.location.href='/dashboard/users/{{this.id}}/edit'">
+                <i class="fas fa-edit"></i>
+                <span>Editar</span>
+            </button>
         `);
     });
+    document.getElementById("add-edit-script").remove();
 </script>
 {{/if}}
+
 <script>
-    $("#search-submit-btn").click(function () {
-        const searchInput = $("#search-input").val();
+    document.getElementById("add-user-btn")?.addEventListener("click", function () {
+        window.location.href = "/dashboard/users/add";
+    });
+
+    document.getElementById("search-submit-btn").addEventListener("click", function () {
+        const searchInput = document.getElementById("search-input").value;
         if (searchInput.length < 1) {
             displayModal("Error", "El campo de búsqueda debe tener al menos 1 caracter.");
             return;
         }
         const form = document.createElement("form");
-        form.setAttribute("method", "GET");
-        form.setAttribute("action", "/dashboard/users");
+        form.method = "GET";
+        form.action = "/dashboard/users";
         const input = document.createElement("input");
-        input.setAttribute("type", "hidden");
-        input.setAttribute("name", "filter");
-        input.setAttribute("value", searchInput);
+        input.type = "hidden";
+        input.name = "filter";
+        input.value = searchInput;
         form.appendChild(input);
         document.body.appendChild(form);
         form.submit();
     });
-    $("#search-input").keypress(function (e) {
-        if (e.which == 13) {
-            $("#search-submit-btn").click();
+
+    document.getElementById("search-input").addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            document.getElementById("search-submit-btn").click();
         }
     });
 </script>
-<style>
-    .search-input {
-        margin-bottom: 20px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        width: 20%;
-        font-size: 16px;
-        font-family: 'Open Sans', sans-serif;
-        outline: none;
-        height: 39px;
-    }
-</style>

@@ -1,56 +1,40 @@
-<div class="data">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <i class="fa fa-fw fa-user"></i>
-                            Perfil
-                        </h3>
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h3 class="profile-title">
+                <i class="fa fa-fw fa-user"></i>
+                Perfil
+            </h3>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-avatar">
+                <img src="{{ user.avatar }}" class="avatar" alt="avatar" id="avatar-field">
+                <h6 id="upload-pic-text">Subir foto...</h6>
+                <input type="file" class="file-input" id="new-avatar-input">
+            </div>
+            
+            <div class="profile-info">
+                <h3>Info personal</h3>
+                <div class="info-form">
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="text" value="{{ user.email }}" disabled>
                     </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="text-center">
-                                    <img src="{{ user.avatar }}" class="avatar img-circle" alt="avatar"
-                                        id="avatar-field">
-                                    <h6 id="upload-pic-text">Subir foto...</h6>
-                                    <input type="file" class="form-control" id="new-avatar-input">
-                                </div>
-                            </div>
-                            <div class="col-md-9 personal-info">
-                                <h3>Info personal</h3>
-                                <form class="form-horizontal" role="form">
-                                    <div class="form-group">
-                                        <label class="col-lg-3 control-label">Email:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="text" value="{{ user.email }}" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-lg-3 control-label">Username:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="text" value="{{ user.username }}"
-                                                disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="mb-3">
-                                            <label for="trash-logs-area" class="form-label">Registros</label>
-                                            <textarea class="form-control" id="trash-logs-area" rows="3"
-                                                disabled>Cargando...</textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" value="{{ user.username }}" disabled>
+                    </div>
+                    <div class="form-group logs">
+                        <label for="trash-logs-area">Registros</label>
+                        <textarea id="trash-logs-area" disabled>Cargando...</textarea>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <script>
     $("#new-avatar-input").change(async (e) => {
         const file = await convertFileToBuffer(document.getElementById("new-avatar-input"));
@@ -97,10 +81,137 @@
         }
     });
 </script>
+
 <style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .profile-card {
+        background-color: var(--dark-surface);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .profile-header {
+        background-color: var(--primary-blue);
+        padding: 20px;
+        border-bottom: 1px solid var(--secondary-blue);
+    }
+
+    .profile-title {
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.25rem;
+    }
+
+    .profile-content {
+        padding: 30px;
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 30px;
+    }
+
+    .profile-avatar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
     .avatar {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
+        border: 3px solid var(--secondary-blue);
+        box-shadow: 0 0 20px rgba(26,35,126,0.3);
+        transition: all 0.3s ease;
+        object-fit: cover;
+    }
+
+    .avatar:hover {
+        transform: scale(1.05);
+    }
+
+    #upload-pic-text {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .file-input {
+        width: 200px;
+        padding: 8px;
+        background-color: var(--dark-bg);
+        border: 1px solid var(--secondary-blue);
+        border-radius: 6px;
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+
+    .profile-info h3 {
+        color: var(--text-primary);
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--secondary-blue);
+        font-size: 1.5rem;
+    }
+
+    .info-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        background-color: var(--dark-bg);
+        border: 1px solid var(--secondary-blue);
+        color: var(--text-primary);
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-group input:disabled,
+    .form-group textarea:disabled {
+        background-color: var(--dark-bg);
+        color: var(--text-secondary);
+        cursor: not-allowed;
+    }
+
+    .form-group.logs textarea {
+        min-height: 150px;
+        font-family: monospace;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .profile-content {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-avatar {
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--secondary-blue);
+        }
     }
 </style>

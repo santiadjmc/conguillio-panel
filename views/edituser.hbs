@@ -1,102 +1,239 @@
-<div class="data">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <i class="fa fa-fw fa-user"></i>
-                            Editar perfil de {{target.name}}
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="text-center">
-                                    <img src="{{ target.avatar }}" class="avatar img-circle" alt="avatar"
-                                        id="avatar-field">
-                                    <h6 id="upload-pic-text">Subir foto...</h6>
-                                    <input type="file" class="form-control" id="new-avatar-input">
-                                </div>
-                            </div>
-                            <div class="col-md-9 personal-info">
-                                <h3>Info personal</h3>
-                                <form class="form-horizontal" role="form" action="/dashboard/users/{{target.id}}/edit"
-                                    method="post">
-                                    <div class="form-group">
-                                        <label class="col-lg-3 control-label">Email:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="text" value="{{ target.email }}"
-                                                name="email">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-lg-3 control-label">Username:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="text" value="{{ target.username }}"
-                                                name="username">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label">Password:</label>
-                                        <div class="col-md-8">
-                                            <input class="form-control" type="password" id="password-field"
-                                                value="{{ target.password }}" name="password">
-                                                <button class="btn btn-default" id="toggle-show-password-btn">
-                                                    <i class="fa fa-eye"></i>
-                                                    Ver contraseña
-                                                </button>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label">Nombre:</label>
-                                            <div class="col-md-8">
-                                                <input class="form-control" type="text" value="{{ target.name }}"
-                                                    name="name">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label">Admin</label>
-                                            <div class="col-md-8">
-                                                <input type="checkbox" {{#if target.admin}} checked {{/if}}
-                                                    name="admin">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label"></label>
-                                            <div class="col-md-8">
-                                                <input type="submit" class="btn btn-primary" value="Guardar">
-                                                <span></span>
-                                                <input type="reset" class="btn btn-default" value="Cancelar">
-                                            </div>
-                                        </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+<div class="edit-user-container">
+    <div class="form-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-user-edit"></i>
+                Editar usuario
+            </h3>
+        </div>
+        <div class="card-body">
+            <form id="edit-form">
+                <div class="form-group">
+                    <label for="name">Nombre completo</label>
+                    <input type="text" id="name" value="{{target.name}}" required>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label for="username">Nombre de usuario</label>
+                    <input type="text" id="username" value="{{target.username}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" value="{{target.email}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña (dejar en blanco para mantener)</label>
+                    <input type="password" id="password">
+                </div>
+                {{#if target.admin}}
+                <div class="form-group checkbox">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="admin" {{#if target.admin}}checked{{/if}}>
+                        <span class="checkbox-text">Administrador</span>
+                    </label>
+                </div>
+                {{/if}}
+                <div class="form-actions">
+                    <button type="submit" class="action-button primary">
+                        <i class="fas fa-save"></i>
+                        <span>Guardar cambios</span>
+                    </button>
+                    <button type="button" class="action-button danger" id="delete-btn">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminar usuario</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
 <style>
-    .avatar {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
+    .edit-user-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .form-card {
+        background-color: var(--dark-surface);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .card-header {
+        background-color: var(--primary-blue);
+        padding: 20px;
+        border-bottom: 1px solid var(--secondary-blue);
+    }
+
+    .card-title {
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.25rem;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+    }
+
+    .form-group input:not([type="checkbox"]) {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--secondary-blue);
+        background-color: var(--dark-bg);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 2px rgba(26,35,126,0.2);
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-blue);
+    }
+
+    .checkbox-text {
+        color: var(--text-primary);
+        user-select: none;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 20px;
+        height: 45px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .action-button.primary {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--text-primary);
+    }
+
+    .action-button.danger {
+        background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+        color: var(--text-primary);
+    }
+
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .action-button {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
+
 <script>
-    $("#toggle-show-password-btn").click(function (e) {
+    document.getElementById("edit-form").addEventListener("submit", async function(e) {
         e.preventDefault();
-        let input = $("#password-field");
-        if (input.attr("type") === "password") {
-            input.attr("type", "text");
-            $(this).html("<i class='fa fa-eye-slash'></i> Ocultar contraseña");
-            $("#password-field").focus();
-        } else {
-            input.attr("type", "password");
-            $(this).html("<i class='fa fa-eye'></i> Ver contraseña");
-            $("#password-field").focus();
+        const data = {
+            name: document.getElementById("name").value,
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            admin: document.getElementById("admin")?.checked ?? false
+        };
+
+        if (!data.name || !data.username || !data.email) {
+            displayModal("Error", "Todos los campos son obligatorios excepto la contraseña");
+            return;
         }
+
+        try {
+            const response = await fetch(`/dashboard/users/{{target.id}}/edit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'User {{user.id}}'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = `/dashboard/users/{{target.id}}/profile?success=Usuario actualizado correctamente`;
+            } else {
+                const errorData = await response.json();
+                displayModal("Error", errorData.message || "No se pudo actualizar el usuario");
+            }
+        } catch (error) {
+            displayModal("Error", "Error al procesar la solicitud");
+        }
+    });
+
+    document.getElementById("delete-btn").addEventListener("click", function() {
+        displayInteractiveModal("Confirmar eliminación", 
+            "¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.", 
+            {
+                className: "btn btn-secondary",
+                text: "Cancelar",
+                onclick: () => document.getElementById("interactive-modal-close").click()
+            },
+            {
+                className: "btn btn-danger",
+                text: "Eliminar",
+                onclick: async () => {
+                    const response = await fetch(`/api/users/{{target.id}}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": "User {{target.id}}"
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        window.location.href = "/dashboard/users?success=Usuario eliminado correctamente";
+                    } else {
+                        displayModal("Error", "No se pudo eliminar el usuario");
+                    }
+                }
+            }
+        );
     });
 </script>

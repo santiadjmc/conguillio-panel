@@ -1,35 +1,15 @@
 <div class="no-results">
-    <div class="container">
-        <input type="text" class="search-input" placeholder="Buscar..." id="search-input" {{#if filter}}
-            value="{{filter}}" {{/if}}>
-        <button class="btn btn-secondary" id="search-submit-btn">
-            <i class="fa fa-fw fa-search"></i>
-            Buscar
-        </button>
-    </div>
-    <div class="container">
-        <center>
-            <div class="card md-3">
-                <div class="card-header">
-                    <h4>No se encontraron resultados</h4>
-                </div>
-                <div class="card-body">
-                    <p>Intenta con otra búsqueda</p>
-                </div>
-                <div class="card-footer">
-                    <div class="btn-group" role="group">
-                        {{#if user.admin}}
-                        <a href="/dashboard/users/add" class="btn btn-primary">
-                            <i class="fa fa-fw fa-plus"></i>
-                            Agregar
-                        </a>
-                        {{/if}}
-                    </div>
-                </div>
-            </div>
-        </center>
+    <div class="no-results-content">
+        <i class="fas fa-search"></i>
+        <h2>No se encontraron resultados</h2>
+        <p>Intenta con otros términos de búsqueda</p>
+        <a href="/dashboard/users" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver</span>
+        </a>
     </div>
 </div>
+
 <script>
     $("#search-submit-btn").click(function () {
         const searchInput = $("#search-input").val();
@@ -55,6 +35,59 @@
     });
 </script>
 <style>
+    .no-results {
+        min-height: calc(100vh - 56px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .no-results-content {
+        text-align: center;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .no-results-content i {
+        font-size: 4rem;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+    }
+
+    .no-results-content h2 {
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+    }
+
+    .no-results-content p {
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(26,35,126,0.3);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     .search-input {
         margin-bottom: 20px;
         border-radius: 5px;

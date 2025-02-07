@@ -1,26 +1,233 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>{{ title }}</title>
     <style>
+        :root {
+            --primary-blue: #1a237e;
+            --secondary-blue: #283593;
+            --dark-bg: #121212;
+            --dark-surface: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --error-red: #cf6679;
+            --success-green: #4caf50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding-top: 56px;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navbar styles */
         .navbar {
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: var(--primary-blue);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 1030;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .navbar-brand {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .nav-item {
+            list-style: none;
+            margin: 0 10px;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal {
+            background-color: var(--dark-surface);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--secondary-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid var(--secondary-blue);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var (--text-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+        }
+
+        .btn-secondary {
+            background-color: var(--dark-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--secondary-blue);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(26,35,126,0.2);
+        }
+
+        /* Form styles */
+        input, textarea, select {
+            background-color: var(--dark-surface);
+            border: 1px solid var(--secondary-blue);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.25);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-blue);
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none !important;
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 
 <body>
-    <script>
-        const ip = '{{ ip }}';
-    </script>
+    <script>const ip = '{{ ip }}';</script>
     <script src="/socket.io/socket.io.js"></script>
     {{#if user}}
     <script>
@@ -28,149 +235,165 @@
         socket.emit("set-id", "{{user.id}}");
     </script>
     {{/if}}
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
     {{#if user}}
-    <nav class="navbar navbar-expand-lg bg-light" id="navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Panel</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/dashboard">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard/profile">Perfil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard/users">Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard/trash/add">Registro de basura</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">Panel</a>
+        <ul class="navbar-menu">
+            <li class="nav-item">
+                <a class="nav-link active" href="/dashboard">Inicio</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/profile">Perfil</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/users">Usuarios</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/trash/add">Registro de basura</a>
+            </li>
+        </ul>
     </nav>
     {{/if}}
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal fade" id="main-modal" tabindex="-1" aria-labelledby="main-modal-title">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 id="main-modal-title" class="modal-title">test</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p id="modal-message">test</p>
-                    </div>
-                </div>
+
+    <!-- Modal básico -->
+    <div class="modal-overlay" id="basic-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="basic-modal-title"></h5>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="basic-modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close">OK</button>
             </div>
         </div>
     </div>
-    <div class="modal fade" id="interactive-modal" tabindex="-1" aria-labelledby="interactive-modal-title">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 id="interactive-modal-title" class="modal-title">test</h5>
-                    <button type="button" class="btn-close" id="interactive-modal-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="interactive-modal-message">test</p>
-                </div>
-                <div class="modal-footer">
-                </div>
+
+    <!-- Modal interactivo -->
+    <div class="modal-overlay" id="interactive-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="interactive-modal-title"></h5>
+                <button class="modal-close" id="interactive-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="interactive-modal-message"></p>
+            </div>
+            <div class="modal-footer" id="interactive-modal-footer">
             </div>
         </div>
     </div>
-    <button hidden disabled type="button" data-bs-toggle="modal" data-bs-target="#main-modal"
-        id="launch-modal-btn"></button>
-    <button hidden disabled type="button" data-bs-toggle="modal" data-bs-target="#interactive-modal"
-        id="launch-interactive-modal-btn"></button>
+
     <script>
+        // Nueva implementación de modales sin Bootstrap
         function displayModal(title, message) {
-            const btn = document.getElementById('launch-modal-btn');
-            $("#main-modal-title").text(title);
-            $("#modal-message").text(message);
-            btn.disabled = false;
-            btn.click();
-            btn.disabled = true;
+            const modal = document.getElementById('basic-modal');
+            const titleEl = document.getElementById('basic-modal-title');
+            const messageEl = document.getElementById('basic-modal-message');
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            modal.style.display = 'flex';
+
+            const closeButtons = modal.querySelectorAll('.modal-close');
+            closeButtons.forEach(btn => {
+                btn.onclick = () => modal.style.display = 'none';
+            });
         }
+
         function displayInteractiveModal(title, message, ...buttons) {
-            const btn = document.getElementById('launch-interactive-modal-btn');
-            $("#interactive-modal-title").text(title);
-            $("#interactive-modal-message").text(message);
-            const footer = document.getElementsByClassName('modal-footer')[0];
+            const modal = document.getElementById('interactive-modal');
+            const titleEl = document.getElementById('interactive-modal-title');
+            const messageEl = document.getElementById('interactive-modal-message');
+            const footer = document.getElementById('interactive-modal-footer');
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
             footer.innerHTML = '';
+            
             if (buttons.length < 1) {
-                footer.innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>';
-            }
-            for (const button of buttons) {
                 const btn = document.createElement('button');
-                btn.className = button.className || 'btn btn-secondary';
-                btn.innerText = button.text || 'OK';
-                btn.onclick = button.onclick || function () {
-                    $("#interactive-modal-close").click();
-                };
+                btn.className = 'btn btn-secondary';
+                btn.textContent = 'OK';
+                btn.onclick = () => modal.style.display = 'none';
                 footer.appendChild(btn);
+            } else {
+                buttons.forEach(button => {
+                    const btn = document.createElement('button');
+                    btn.className = button.className || 'btn btn-secondary';
+                    btn.textContent = button.text || 'OK';
+                    btn.onclick = button.onclick || function() {
+                        modal.style.display = 'none';
+                    };
+                    footer.appendChild(btn);
+                });
             }
-            btn.disabled = false;
-            btn.click();
-            btn.disabled = true;
+
+            modal.style.display = 'flex';
+
+            const closeButtons = modal.querySelectorAll('.modal-close');
+            closeButtons.forEach(btn => {
+                btn.onclick = () => modal.style.display = 'none';
+            });
         }
+
         function convertFileToBuffer(inputFileValue) {
             return new Promise((resolve, reject) => {
                 const file = inputFileValue.files[0];
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(file);
-                reader.onload = function (event) {
+                reader.onload = function(event) {
                     let buffer = event.target.result;
-                    let base64 = btoa(new Uint8Array(buffer).reduce(function (data, byte) {
+                    let base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => {
                         return data + String.fromCharCode(byte);
                     }, ''));
                     resolve({ base64, buffer });
                 };
-                reader.onerror = function (event) {
+                reader.onerror = function(event) {
                     reject("File could not be read! Code " + event.target.error.code);
                 };
             });
         }
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.style.display = 'none';
+            }
+        }
     </script>
+
     <script src="/js/utils.js"></script>
-    <script>
-        utils.askForNotificationPermission();
-    </script>
-    <script src="/js//index.js"></script>
+    <script>utils.askForNotificationPermission();</script>
+    <script src="/js/index.js"></script>
     <script src="/js/WebSocketManager.js"></script>
-    <script>
-        ws.sendData("set-user-id", ["{{user.id}}"]);
-    </script>
+    <script>ws.sendData("set-user-id", ["{{user.id}}"]);</script>
+
     {{#if error}}
     <script id="error-script">
-        $(document).ready(function () {
+        $(document).ready(function() {
             displayModal('Error', '{{ error }}');
             $("#error-script").remove();
         });
     </script>
     {{/if}}
+
     {{#if success}}
     <script id="success-script">
-        $(document).ready(function () {
+        $(document).ready(function() {
             displayModal('Success', '{{ success }}');
             $("#success-script").remove();
         });
     </script>
     {{/if}}
+
     {{{ body }}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
-        crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
 </body>
-
 </html>

@@ -1,100 +1,160 @@
 <div class="welcome-screen">
-    <h1 class="welcome-message">Hola, {{user.name}}.</h1>
-    <span class="wave-emoji-animation">👋</span>
+    <div class="welcome-content">
+        <h1 class="welcome-message">Hola, {{user.name}}</h1>
+        <span class="wave-emoji">👋</span>
+    </div>
 </div>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<center>
-    <div class="actions">
-        <a href="/dashboard/profile" class="btn btn-primary">
+
+<div class="dashboard">
+    <div class="actions-grid">
+        <a href="/dashboard/profile" class="action-card">
             <i class="fas fa-user"></i>
             <span>Perfil</span>
         </a>
-        <a href="/dashboard/users" class="btn btn-primary">
+        <a href="/dashboard/users" class="action-card">
             <i class="fas fa-users"></i>
             <span>Usuarios</span>
         </a>
-        <button class="btn btn-danger" id="exit-btn">
+        <button class="action-card danger" id="exit-btn">
             <i class="fas fa-sign-out-alt"></i>
             <span>Salir</span>
         </button>
     </div>
-</center>
-<style id="dashboard-style">
+</div>
+
+<style>
     .welcome-screen {
+        padding: 60px 20px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        margin-bottom: 40px;
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .welcome-content {
+        max-width: 1200px;
+        margin: 0 auto;
         display: flex;
-        position: absolute;
         align-items: center;
-        top: 10%;
-        left: 35%;
-        height: 20vh;
+        justify-content: center;
+        gap: 20px;
     }
 
     .welcome-message {
         font-size: 2.5rem;
         font-weight: bold;
-        color: #fff;
-        text-shadow: 0 0 10px #000;
+        color: var(--text-primary);
+        animation: slideIn 0.8s ease-out;
     }
 
-    .welcome-text {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #fff;
-        text-shadow: 0 0 10px #000;
+    .wave-emoji {
+        font-size: 3.5rem;
+        animation: wave 2s infinite;
+        transform-origin: 70% 70%;
     }
 
-    .loading-message {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #fff;
-        text-shadow: 0 0 10px #000;
+    .dashboard {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
     }
 
-    .wave-emoji-animation {
-        font-size: 5rem;
-        animation: wave-emoji-animation 1s infinite;
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px 0;
     }
 
-    @keyframes wave-emoji-animation {
-        0% {
-            transform: rotate(0deg);
+    .action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        background: var(--dark-surface);
+        border: 1px solid var(--secondary-blue);
+        border-radius: 12px;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        gap: 15px;
+    }
+
+    .action-card i {
+        font-size: 2rem;
+    }
+
+    .action-card span {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(26,35,126,0.3);
+    }
+
+    .action-card.danger {
+        background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+        border: none;
+        grid-column: 1 / -1;
+        max-width: 300px;
+        margin: 20px auto;
+    }
+
+    @keyframes slideIn {
+        from { 
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes wave {
+        0% { transform: rotate(0deg); }
+        10% { transform: rotate(-10deg); }
+        20% { transform: rotate(12deg); }
+        30% { transform: rotate(-10deg); }
+        40% { transform: rotate(9deg); }
+        50% { transform: rotate(0deg); }
+        100% { transform: rotate(0deg); }
+    }
+
+    @media (max-width: 768px) {
+        .welcome-message {
+            font-size: 2rem;
         }
 
-        50% {
-            transform: rotate(10deg);
+        .wave-emoji {
+            font-size: 3rem;
         }
 
-        100% {
-            transform: rotate(0deg);
+        .action-card {
+            padding: 20px;
         }
-    }
-
-    .actions .btn {
-        margin: 1rem;
     }
 </style>
+
 <script>
-    $("#exit-btn").click(() => {
+    document.getElementById("exit-btn").addEventListener("click", () => {
         displayInteractiveModal("Confirmación", "¿Estás seguro de que quieres salir?", {
-            className: "btn btn-danger",
+            className: "btn btn-secondary",
             text: "Cancelar",
             onclick: () => {
-                $("#interactive-modal-close").click();
+                document.getElementById("interactive-modal-close").click();
             }
         }, {
-            className: "btn btn-success",
+            className: "btn btn-danger",
             text: "Confirmar",
             onclick: () => {
-                $("#interactive-modal-close").click();
+                document.getElementById("interactive-modal-close").click();
                 window.location.href = "/logout";
             }
         });
-    })
+    });
 </script>
