@@ -10,9 +10,41 @@ const db = require('../mysql/db');
 const fs = require('fs');
 const utils = require("../utils");
 const data = require('../data/data');
+
 function genRandomString(length) {
-    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1); s
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
 }
+
+// Public routes (no rate limiting or auth required)
+router.get("/status", async (req, res) => {
+    try {
+        const status = {
+            server: "online",
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+            version: require('../package.json').version
+        };
+        
+        // Check database connection
+        try {
+            await db.query("SELECT 1");
+            status.database = "connected";
+        } catch (error) {
+            status.database = "disconnected";
+        }
+        
+        res.json(status);
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Error retrieving status",
+            error: error.message
+        });
+    }
+});
+
+// Apply rate limiting to remaining routes
 router.use(RateLimit.ratelimit);
 /**
  * @param {import("express").Request} req
@@ -68,34 +100,6 @@ router.delete("/users/:id", restricted, async (req, res) => {
         status: 200,
         message: 'User deleted'
     });
-});
-
-router.get("/status", async (req, res) => {
-    try {
-        const status = {
-            server: "online",
-            timestamp: new Date().toISOString(),
-            uptime: process.uptime(),
-            memory: process.memoryUsage(),
-            version: require('../package.json').version
-        };
-        
-        // Check database connection
-        try {
-            await db.query("SELECT 1");
-            status.database = "connected";
-        } catch (error) {
-            status.database = "disconnected";
-        }
-        
-        res.json(status);
-    } catch (error) {
-        res.status(500).json({
-            status: 500,
-            message: "Error retrieving status",
-            error: error.message
-        });
-    }
 });
 
 router.post("/users/new", restricted, async (req, res) => {
