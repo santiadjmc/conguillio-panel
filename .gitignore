@@ -1,6 +1,32 @@
-package-lock.json
-.env
-img/avatars
-audio/
-.vscode/
+# Dependencies
 node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# User uploaded files
+img/avatars/
+audio/
+
+# IDE/Editor files
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+
+# Temporary files
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+Thumbs.db
