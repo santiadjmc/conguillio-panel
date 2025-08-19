@@ -45,7 +45,8 @@ app.use(session({
     secret: data.server.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    store: new MysqlSessionStore(data.database)
+    // Use memory store for demo (would use MySQL in production)
+    // store: new MysqlSessionStore(data.database)
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
