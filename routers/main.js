@@ -12,6 +12,28 @@ function onlyAuth(req, res, next) {
     res.redirect('/');
 }
 
+// Helper function to validate user access and fetch user data
+async function validateUserAccess(req, res, next, requireAdmin = false) {
+    const id = req.params.id;
+    
+    if (requireAdmin && !req.user.admin) {
+        return res.redirect(`/dashboard/users/${id}/profile`);
+    }
+    
+    try {
+        const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
+        if (!user[0]) {
+            return next(); // Will trigger 404
+        }
+        
+        req.targetUser = user[0];
+        return next();
+    } catch (error) {
+        console.error('Database error:', error);
+        return res.status(500).render("404", { title: "Error" });
+    }
+}
+
 router.get("/favicon.ico", (req, res) => {
     res.send("../img/avatars/favicon-16x16.png");
 });
@@ -46,6 +68,14 @@ router.get("/dashboard/profile", onlyAuth, async (req, res) => {
     });
 });
 
+router.get("/dashboard/messages", onlyAuth, async (req, res) => {
+    const users = await db.query(`SELECT id, username, name, avatar, status FROM users WHERE id != ? AND hidden != 1`, [req.user.id]);
+    res.render("messages_list", {
+        title: "Mensajes",
+        users: JSON.parse(JSON.stringify(users))
+    });
+});
+
 router.get("/dashboard/users/:id/profile", onlyAuth, async (req, res, next) => {
     const id = req.params.id;
     if (Number(id) === Number(req.user.id)) {
@@ -63,62 +93,75 @@ router.get("/dashboard/users/:id/profile", onlyAuth, async (req, res, next) => {
 });
 
 router.get("/dashboard/users", onlyAuth, async (req, res) => {
-    const users = (await db.query(`SELECT * FROM users`)).filter(user => !user.hidden);
-    if (req.query.filter) {
-        const filteredUsers = users.filter(user => user.username.toLowerCase().includes(req.query.filter.toLowerCase()) || user.name.toLowerCase().includes(req.query.filter.toLowerCase()));
-        if (filteredUsers.length < 1) {
-            return res.render("no_results", {
-                title: "Oops...",
+    try {
+        const users = (await db.query(`SELECT * FROM users`)).filter(user => !user.hidden);
+        
+        if (req.query.filter) {
+            const searchTerm = req.query.filter.toLowerCase();
+            const filteredUsers = users.filter(user => 
+                user.username.toLowerCase().includes(searchTerm) || 
+                user.name.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredUsers.length < 1) {
+                return res.render("no_results", {
+                    title: "Sin resultados",
+                    filter: req.query.filter,
+                });
+            }
+            
+            return res.render("users", {
+                title: "Usuarios",
+                users: filteredUsers,
                 filter: req.query.filter,
             });
         }
+        
         res.render("users", {
             title: "Usuarios",
-            users: JSON.parse(JSON.stringify(filteredUsers)),
-            filter: req.query.filter,
+            users: users,
         });
-        return;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).render("404", { title: "Error" });
     }
-    res.render("users", {
-        title: "Users",
-        users: JSON.parse(JSON.stringify(users)),
-    });
 });
 
 router.get("/dashboard/users/add", onlyAuth, async (req, res) => {
-    if (!req.user.admin) res.redirect("/dashboard/users");
+    if (!req.user.admin) {
+        return res.redirect("/dashboard/users");
+    }
     res.render("adduser", {
-        title: "Add User",
+        title: "Agregar Usuario",
     });
 });
 
-router.get("/dashboard/users/:id/edit", onlyAuth, async (req, res, next) => {
-    const id = req.params.id;
-    if (!req.user.admin) res.redirect(`/dashboard/users/${id}/profile`);
-    const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
-    if (!user[0]) {
-        return next();
-    }
-    user[0].password = utils.decryptWithAES(data.server.encryptionKey, user[0].password);
+router.get("/dashboard/users/:id/edit", onlyAuth, (req, res, next) => validateUserAccess(req, res, next, true), async (req, res) => {
+    req.targetUser.password = utils.decryptWithAES(data.server.encryptionKey, req.targetUser.password);
     res.render("edituser", {
-        title: `${user[0].username}`,
-        target: user[0],
+        title: `Editar: ${req.targetUser.username}`,
+        target: req.targetUser,
     });
 });
 
-router.post("/dashboard/users/:id/edit", onlyAuth, async (req, res, next) => {
-    const id = req.params.id;
-    if (!req.user.admin) res.redirect(`/dashboard/users/${id}/profile`);
-    const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
-    if (!user[0]) {
-        return next();
+router.post("/dashboard/users/:id/edit", onlyAuth, (req, res, next) => validateUserAccess(req, res, next, true), async (req, res) => {
+    try {
+        const { username, password, email, name } = req.body;
+        let encryptedPass = utils.encryptWithAES(data.server.encryptionKey, password);
+        let admin = req.body.admin === "on";
+        
+        await db.query(`UPDATE users SET ? WHERE id = ?`, [
+            { username, email, password: encryptedPass, admin, name }, 
+            req.params.id
+        ]);
+        
+        req.flash("success", "Usuario editado correctamente.");
+        res.redirect(`/dashboard/users/`);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        req.flash("error", "Error al actualizar el usuario.");
+        res.redirect(`/dashboard/users/${req.params.id}/edit`);
     }
-    const { username, password, email, name } = req.body;
-    let encryptedPass = utils.encryptWithAES(data.server.encryptionKey, password);
-    let admin = req.body.admin === "on";
-    await db.query(`UPDATE users SET ? WHERE id = ?`, [{ username, email, password: encryptedPass, admin, name }, id]);
-    req.flash("success", "Usuario editado correctamente.");
-    res.redirect(`/dashboard/users/`);
 });
 
 router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => {

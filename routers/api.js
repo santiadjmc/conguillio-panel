@@ -70,6 +70,34 @@ router.delete("/users/:id", restricted, async (req, res) => {
     });
 });
 
+router.get("/status", async (req, res) => {
+    try {
+        const status = {
+            server: "online",
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+            version: require('../package.json').version
+        };
+        
+        // Check database connection
+        try {
+            await db.query("SELECT 1");
+            status.database = "connected";
+        } catch (error) {
+            status.database = "disconnected";
+        }
+        
+        res.json(status);
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Error retrieving status",
+            error: error.message
+        });
+    }
+});
+
 router.post("/users/new", restricted, async (req, res) => {
     const { username, password, email, admin, name } = req.body;
     const user = await db.query(`SELECT * FROM users WHERE username = ? OR email = ?`, [username, email]);

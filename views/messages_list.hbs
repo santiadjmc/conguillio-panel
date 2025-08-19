@@ -1,0 +1,211 @@
+<div class="messages-container">
+    <header class="messages-header">
+        <h1>Mensajes</h1>
+        <p>Selecciona un usuario para iniciar una conversación</p>
+    </header>
+
+    <div class="users-grid">
+        {{#each users}}
+        <a href="/dashboard/users/{{this.id}}/messages" class="user-card card">
+            <div class="user-avatar-container">
+                <img src="{{this.avatar}}" alt="{{this.name}}" class="user-avatar">
+                <div class="status-indicator {{this.status}}"></div>
+            </div>
+            <div class="user-info">
+                <h3 class="user-name">{{this.name}}</h3>
+                <p class="user-username">@{{this.username}}</p>
+                <p class="user-status">
+                    <i class="fas fa-circle status-dot {{this.status}}"></i>
+                    {{this.status}}
+                </p>
+            </div>
+            <div class="message-preview">
+                <i class="fas fa-comments"></i>
+                <span>Enviar mensaje</span>
+            </div>
+        </a>
+        {{/each}}
+        
+        <!-- AI Chat Option -->
+        <a href="/dashboard/users/0/messages" class="user-card card ai-chat">
+            <div class="user-avatar-container">
+                <img src="/img/barnie_avatar.png" alt="BarnieBot" class="user-avatar">
+                <div class="status-indicator online"></div>
+            </div>
+            <div class="user-info">
+                <h3 class="user-name">BarnieBot</h3>
+                <p class="user-username">@ai_assistant</p>
+                <p class="user-status">
+                    <i class="fas fa-circle status-dot online"></i>
+                    Asistente IA
+                </p>
+            </div>
+            <div class="message-preview">
+                <i class="fas fa-robot"></i>
+                <span>Chat con IA</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<style>
+.messages-container {
+    padding: var(--space-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.messages-header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.messages-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.messages-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+}
+
+.user-card {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-blue);
+}
+
+.user-card.ai-chat {
+    background: linear-gradient(135deg, var(--primary-gradient));
+    color: white;
+}
+
+.user-card.ai-chat .user-info * {
+    color: white;
+}
+
+.user-avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: var(--space-md);
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 3px solid var(--dark-border);
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--dark-surface);
+}
+
+.status-indicator.online {
+    background: var(--success);
+}
+
+.status-indicator.offline {
+    background: var(--text-muted);
+}
+
+.user-info {
+    margin-bottom: var(--space-md);
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-xs);
+    color: var(--text-primary);
+}
+
+.user-username {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-xs);
+}
+
+.user-status {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.status-dot {
+    font-size: 0.6rem;
+}
+
+.status-dot.online {
+    color: var(--success);
+}
+
+.status-dot.offline {
+    color: var(--text-muted);
+}
+
+.message-preview {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--dark-elevated);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: all var(--transition-normal);
+}
+
+.user-card:hover .message-preview {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.ai-chat .message-preview {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .users-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .messages-container {
+        padding: var(--space-lg);
+    }
+    
+    .messages-header h1 {
+        font-size: 2rem;
+    }
+}
+</style>

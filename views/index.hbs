@@ -1,14 +1,14 @@
-<div class="login-container animate-fade-in">
+<div class="login-container">
     <div class="login-card card">
         <div class="login-header">
-            <div class="login-logo animate-bounce">
+            <div class="login-logo">
                 <i class="fas fa-home"></i>
             </div>
-            <h1 class="login-title animate-fade-in-down">¡Bienvenido!</h1>
-            <p class="login-subtitle animate-fade-in animate-delay-200">Accede al Panel de Conguillio</p>
+            <h1 class="login-title">¡Bienvenido!</h1>
+            <p class="login-subtitle">Accede al Panel de Conguillio</p>
         </div>
         
-        <form action="/api/auth" method="post" class="login-form animate-fade-in-up animate-delay-300">
+        <form action="/api/auth" method="post" class="login-form">
             <div class="input-group">
                 <input type="email" name="email" id="email" class="input input-floating" placeholder=" " required>
                 <label for="email" class="label label-floating">
@@ -23,21 +23,19 @@
                 </label>
             </div>
             
-            <button type="submit" class="btn btn-primary btn-full btn-xl login-submit animate-pulse">
+            <button type="submit" class="btn btn-primary btn-full btn-xl login-submit">
                 <i class="fas fa-sign-in-alt"></i>
                 Iniciar Sesión
             </button>
         </form>
         
-        <div class="login-footer animate-fade-in animate-delay-500">
+        <div class="login-footer">
             <p class="text-muted">¿Necesitas ayuda? <a href="#" class="text-accent">Contacta soporte</a></p>
         </div>
     </div>
     
     <div class="login-background">
         <div class="floating-particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
@@ -159,53 +157,35 @@
         background: var(--primary-blue);
         border-radius: 50%;
         opacity: 0.6;
-        animation: float 6s infinite linear;
+        animation: float 6s ease-in-out infinite;
     }
 
     .particle:nth-child(1) {
+        top: 20%;
         left: 20%;
         animation-delay: 0s;
-        animation-duration: 6s;
     }
 
     .particle:nth-child(2) {
-        left: 40%;
+        top: 60%;
+        left: 80%;
         animation-delay: 2s;
-        animation-duration: 8s;
     }
 
     .particle:nth-child(3) {
-        left: 60%;
+        top: 80%;
+        left: 40%;
         animation-delay: 4s;
-        animation-duration: 10s;
-    }
-
-    .particle:nth-child(4) {
-        left: 80%;
-        animation-delay: 6s;
-        animation-duration: 7s;
-    }
-
-    .particle:nth-child(5) {
-        left: 10%;
-        animation-delay: 8s;
-        animation-duration: 9s;
     }
 
     @keyframes float {
-        0% {
-            transform: translateY(100vh) rotate(0deg);
-            opacity: 0;
-        }
-        10% {
+        0%, 100% {
+            transform: translateY(0px);
             opacity: 0.6;
         }
-        90% {
-            opacity: 0.6;
-        }
-        100% {
-            transform: translateY(-100px) rotate(360deg);
-            opacity: 0;
+        50% {
+            transform: translateY(-20px);
+            opacity: 1;
         }
     }
 

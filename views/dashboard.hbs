@@ -1,52 +1,51 @@
-<div class="dashboard-container animate-fade-in">
+<div class="dashboard-container">
     <div class="welcome-screen">
         <div class="welcome-content">
-            <div class="welcome-avatar animate-scale-in">
+            <div class="welcome-avatar">
                 <img src="{{user.avatar}}" alt="Avatar" class="user-avatar">
                 <div class="status-indicator online"></div>
             </div>
-            <div class="welcome-text animate-slide-in animate-delay-200">
+            <div class="welcome-text">
                 <h1 class="welcome-message">¡Hola, {{user.name}}!</h1>
                 <p class="welcome-subtitle">Bienvenido de vuelta al panel</p>
             </div>
-            <span class="wave-emoji animate-wave animate-delay-300">👋</span>
         </div>
     </div>
 
     <div class="dashboard">
-        <div class="dashboard-stats animate-fade-in-up animate-delay-500">
-            <div class="stat-card card animate-fade-in-left">
+        <div class="dashboard-stats">
+            <div class="stat-card card">
                 <div class="stat-icon">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-number">150</h3>
-                    <p class="stat-label">Usuarios Activos</p>
+                    <h3 class="stat-number">{{users.length}}</h3>
+                    <p class="stat-label">Usuarios Registrados</p>
                 </div>
             </div>
             
-            <div class="stat-card card animate-fade-in-left animate-delay-100">
+            <div class="stat-card card">
                 <div class="stat-icon">
                     <i class="fas fa-comments"></i>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-number">1,234</h3>
+                    <h3 class="stat-number">--</h3>
                     <p class="stat-label">Mensajes Hoy</p>
                 </div>
             </div>
             
-            <div class="stat-card card animate-fade-in-left animate-delay-200">
+            <div class="stat-card card">
                 <div class="stat-icon">
                     <i class="fas fa-robot"></i>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-number">89</h3>
+                    <h3 class="stat-number">--</h3>
                     <p class="stat-label">Consultas IA</p>
                 </div>
             </div>
         </div>
 
-        <div class="actions-grid animate-fade-in-up animate-delay-700">
+        <div class="actions-grid">
             <a href="/dashboard/profile" class="action-card card-interactive animate-scale-in">
                 <div class="action-icon">
                     <i class="fas fa-user"></i>
@@ -58,7 +57,7 @@
                 </div>
             </a>
             
-            <a href="/dashboard/users" class="action-card card-interactive animate-scale-in animate-delay-100">
+            <a href="/dashboard/users" class="action-card card-interactive">
                 <div class="action-icon">
                     <i class="fas fa-users"></i>
                 </div>
@@ -69,7 +68,7 @@
                 </div>
             </a>
             
-            <a href="/dashboard/messages" class="action-card card-interactive animate-scale-in animate-delay-200">
+            <a href="/dashboard/messages" class="action-card card-interactive">
                 <div class="action-icon">
                     <i class="fas fa-comments"></i>
                 </div>
@@ -80,7 +79,7 @@
                 </div>
             </a>
             
-            <button class="action-card card-interactive btn-danger animate-scale-in animate-delay-300" id="exit-btn">
+            <button class="action-card card-interactive btn-danger" id="exit-btn">
                 <div class="action-icon">
                     <i class="fas fa-sign-out-alt"></i>
                 </div>
@@ -92,7 +91,7 @@
             </button>
         </div>
         
-        <div class="quick-actions animate-fade-in-up animate-delay-900">
+        <div class="quick-actions">
             <h2 class="section-title">Acciones Rápidas</h2>
             <div class="quick-actions-grid">
                 <button class="quick-action-btn btn btn-primary">
@@ -449,36 +448,8 @@
                 }
             });
         });
-
-        // Add hover sound effects (if audio is available)
-        const actionCards = document.querySelectorAll('.action-card');
-        actionCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.animation = 'pulse 0.6s ease-out';
-            });
-
-            card.addEventListener('animationend', () => {
-                card.style.animation = '';
-            });
-        });
-
-        // Statistics counter animation
-        const statNumbers = document.querySelectorAll('.stat-number');
-        const animateCounters = (entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const target = entry.target;
-                    const finalValue = parseInt(target.textContent.replace(/,/g, ''));
-                    let currentValue = 0;
-                    const increment = finalValue / 50;
-                    const timer = setInterval(() => {
-                        currentValue += increment;
-                        if (currentValue >= finalValue) {
-                            currentValue = finalValue;
-                            clearInterval(timer);
-                        }
-                        target.textContent = Math.floor(currentValue).toLocaleString();
-                    }, 30);
+    });
+</script>
                     observer.unobserve(target);
                 }
             });

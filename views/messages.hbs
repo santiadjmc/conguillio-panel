@@ -1,4 +1,4 @@
-<div class="chat-container animate-fade-in">
+<div class="chat-container">
     <!-- Enhanced Chat Header -->
     <header class="chat-header">
         <div class="user-info">
@@ -32,14 +32,14 @@
     <main class="chat-main">
         <div class="chat-messages" id="chat-messages">
             {{#if messages.length}}
-                <button class="load-more-btn btn btn-ghost animate-fade-in" id="load-more-messages">
+                <button class="load-more-btn btn btn-ghost" id="load-more-messages">
                     <i class="fas fa-history"></i>
                     Cargar mensajes anteriores
                 </button>
                 
                 <div class="messages-container">
                     {{#each messages}}
-                    <div class="message-wrapper animate-slide-in-bottom">
+                    <div class="message-wrapper">
                         <div class="chat-message {{#if this.isOwn}}own{{/if}}">
                             {{#unless this.isOwn}}
                             <img class="message-avatar" src="{{this.avatar}}" alt="{{this.name}}" loading="lazy">
