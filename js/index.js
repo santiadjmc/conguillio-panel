@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Don't interfere with links that open in new tabs
             if (e.ctrlKey || e.metaKey || link.target === '_blank') return;
             
-            UIManager.showLoading();
+            if (typeof UIManager !== 'undefined') {
+                UIManager.showLoading();
+            }
         });
     });
 
@@ -55,12 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', () => {
-            UIManager.showLoading();
+            if (typeof UIManager !== 'undefined') {
+                UIManager.showLoading();
+            }
         });
     });
 
     // Hide loading when page is fully loaded
     window.addEventListener('load', () => {
-        setTimeout(() => UIManager.hideLoading(), 500);
+        setTimeout(() => {
+            if (typeof UIManager !== 'undefined') {
+                UIManager.hideLoading();
+            }
+        }, 500);
     });
 });

@@ -17,7 +17,7 @@ class WebSocketManager extends WebSocket {
     
     constructor(url) {
         super(url);
-        this.url = url;
+        this.wsUrl = url; // Use a different property name to avoid conflict
         this.setupEventHandlers();
         this.setupConnectionTimeout();
     }
@@ -59,19 +59,29 @@ class WebSocketManager extends WebSocket {
                 this.reconnect();
             }, this.#reconnectDelay * this.#reconnectAttempts);
         } else {
-            displayInteractiveModal("Conexión Perdida", "No se pudo restablecer la conexión WebSocket. Por favor, recarga la página.", {
-                className: "btn btn-primary",
-                text: "Recargar",
-                onclick: () => {
-                    window.location.reload();
-                }
-            });
+            if (typeof displayInteractiveModal === 'function') {
+                displayInteractiveModal("Conexión Perdida", "No se pudo restablecer la conexión WebSocket. Por favor, recarga la página.", {
+                    className: "btn btn-primary",
+                    text: "Recargar",
+                    onclick: () => {
+                        window.location.reload();
+                    }
+                });
+            } else {
+                // Fallback if modal function is not available
+                UIManager.showToast('Conexión WebSocket perdida. Recarga la página.', 'error', 0);
+                setTimeout(() => {
+                    if (confirm('¿Deseas recargar la página para restablecer la conexión?')) {
+                        window.location.reload();
+                    }
+                }, 2000);
+            }
         }
     }
     
     reconnect() {
         try {
-            const newWs = new WebSocket(this.url);
+            const newWs = new WebSocket(this.wsUrl);
             
             newWs.onopen = this.onopen;
             newWs.onclose = this.onclose;

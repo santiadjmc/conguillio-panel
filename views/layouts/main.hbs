@@ -485,16 +485,25 @@
         class UIManager {
             static showLoading() {
                 const overlay = document.getElementById('loadingOverlay');
-                overlay.classList.add('show');
+                if (overlay) {
+                    overlay.classList.add('show');
+                }
             }
             
             static hideLoading() {
                 const overlay = document.getElementById('loadingOverlay');
-                overlay.classList.remove('show');
+                if (overlay) {
+                    overlay.classList.remove('show');
+                }
             }
             
             static showToast(message, type = 'info', duration = 5000) {
                 const container = document.getElementById('toastContainer');
+                if (!container) {
+                    console.warn('Toast container not found');
+                    return;
+                }
+                
                 const toast = document.createElement('div');
                 toast.className = `toast toast-${type}`;
                 
@@ -631,28 +640,68 @@
     <script src="/js/index.js"></script>
     <script src="/js/WebSocketManager.js"></script>
     {{#if user}}
-    <script>ws.sendData("set-user-id", ["{{user.id}}"]);</script>
+    <script>
+        // Ensure WebSocket is ready before sending data
+        if (typeof ws !== 'undefined' && ws.connected) {
+            ws.sendData("set-user-id", ["{{user.id}}"]);
+        } else {
+            // Wait for WebSocket to be ready
+            setTimeout(() => {
+                if (typeof ws !== 'undefined') {
+                    ws.sendData("set-user-id", ["{{user.id}}"]);
+                } else {
+                    console.warn('WebSocket manager not available');
+                }
+            }, 1000);
+        }
+    </script>
     {{/if}}
 
     {{#if error}}
     <script id="error-script">
-        $(document).ready(function() {
-            UIManager.showToast('{{ error }}', 'error');
-            $("#error-script").remove();
-        });
+        if (typeof $ !== 'undefined') {
+            $(document).ready(function() {
+                UIManager.showToast('{{ error }}', 'error');
+                $("#error-script").remove();
+            });
+        } else {
+            // Fallback when jQuery is not available
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof UIManager !== 'undefined') {
+                    UIManager.showToast('{{ error }}', 'error');
+                }
+                const script = document.getElementById('error-script');
+                if (script) script.remove();
+            });
+        }
     </script>
     {{/if}}
 
     {{#if success}}
     <script id="success-script">
-        $(document).ready(function() {
-            UIManager.showToast('{{ success }}', 'success');
-            $("#success-script").remove();
-        });
+        if (typeof $ !== 'undefined') {
+            $(document).ready(function() {
+                UIManager.showToast('{{ success }}', 'success');
+                $("#success-script").remove();
+            });
+        } else {
+            // Fallback when jQuery is not available
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof UIManager !== 'undefined') {
+                    UIManager.showToast('{{ success }}', 'success');
+                }
+                const script = document.getElementById('success-script');
+                if (script) script.remove();
+            });
+        }
     </script>
     {{/if}}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
+    <script>
+        if (typeof hljs !== 'undefined') {
+            hljs.highlightAll();
+        }
+    </script>
 </body>
 </html>
