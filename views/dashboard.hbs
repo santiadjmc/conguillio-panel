@@ -1,34 +1,141 @@
-<div class="welcome-screen">
-    <div class="welcome-content">
-        <h1 class="welcome-message">Hola, {{user.name}}</h1>
-        <span class="wave-emoji">👋</span>
+<div class="dashboard-container animate-fade-in">
+    <div class="welcome-screen">
+        <div class="welcome-content">
+            <div class="welcome-avatar animate-scale-in">
+                <img src="{{user.avatar}}" alt="Avatar" class="user-avatar">
+                <div class="status-indicator online"></div>
+            </div>
+            <div class="welcome-text animate-slide-in animate-delay-200">
+                <h1 class="welcome-message">¡Hola, {{user.name}}!</h1>
+                <p class="welcome-subtitle">Bienvenido de vuelta al panel</p>
+            </div>
+            <span class="wave-emoji animate-wave animate-delay-300">👋</span>
+        </div>
     </div>
-</div>
 
-<div class="dashboard">
-    <div class="actions-grid">
-        <a href="/dashboard/profile" class="action-card">
-            <i class="fas fa-user"></i>
-            <span>Perfil</span>
-        </a>
-        <a href="/dashboard/users" class="action-card">
-            <i class="fas fa-users"></i>
-            <span>Usuarios</span>
-        </a>
-        <button class="action-card danger" id="exit-btn">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Salir</span>
-        </button>
+    <div class="dashboard">
+        <div class="dashboard-stats animate-fade-in-up animate-delay-500">
+            <div class="stat-card card animate-fade-in-left">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">150</h3>
+                    <p class="stat-label">Usuarios Activos</p>
+                </div>
+            </div>
+            
+            <div class="stat-card card animate-fade-in-left animate-delay-100">
+                <div class="stat-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">1,234</h3>
+                    <p class="stat-label">Mensajes Hoy</p>
+                </div>
+            </div>
+            
+            <div class="stat-card card animate-fade-in-left animate-delay-200">
+                <div class="stat-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number">89</h3>
+                    <p class="stat-label">Consultas IA</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-grid animate-fade-in-up animate-delay-700">
+            <a href="/dashboard/profile" class="action-card card-interactive animate-scale-in">
+                <div class="action-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 class="action-title">Mi Perfil</h3>
+                <p class="action-description">Gestiona tu información personal y configuración</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="/dashboard/users" class="action-card card-interactive animate-scale-in animate-delay-100">
+                <div class="action-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="action-title">Usuarios</h3>
+                <p class="action-description">Administra usuarios y permisos del sistema</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="/dashboard/messages" class="action-card card-interactive animate-scale-in animate-delay-200">
+                <div class="action-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3 class="action-title">Mensajes</h3>
+                <p class="action-description">Chat inteligente con IA avanzada</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <button class="action-card card-interactive btn-danger animate-scale-in animate-delay-300" id="exit-btn">
+                <div class="action-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <h3 class="action-title">Cerrar Sesión</h3>
+                <p class="action-description">Salir de forma segura del panel</p>
+                <div class="action-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </button>
+        </div>
+        
+        <div class="quick-actions animate-fade-in-up animate-delay-900">
+            <h2 class="section-title">Acciones Rápidas</h2>
+            <div class="quick-actions-grid">
+                <button class="quick-action-btn btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Usuario
+                </button>
+                <button class="quick-action-btn btn btn-secondary">
+                    <i class="fas fa-download"></i>
+                    Exportar Datos
+                </button>
+                <button class="quick-action-btn btn btn-success">
+                    <i class="fas fa-chart-bar"></i>
+                    Ver Estadísticas
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
+    .dashboard-container {
+        min-height: calc(100vh - 70px);
+    }
+
     .welcome-screen {
-        padding: 60px 20px;
-        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-        margin-bottom: 40px;
-        border-radius: 0 0 30px 30px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        background: var(--primary-gradient);
+        padding: var(--space-2xl) var(--space-xl);
+        margin-bottom: var(--space-2xl);
+        border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-screen::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="60" cy="30" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        animation: float 20s infinite linear;
     }
 
     .welcome-content {
@@ -37,124 +144,352 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 20px;
+        gap: var(--space-xl);
+        position: relative;
+        z-index: 2;
+    }
+
+    .welcome-avatar {
+        position: relative;
+    }
+
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: var(--radius-full);
+        border: 4px solid rgba(255,255,255,0.3);
+        object-fit: cover;
+        transition: all var(--transition-normal);
+    }
+
+    .user-avatar:hover {
+        transform: scale(1.1) rotate(5deg);
+        border-color: rgba(255,255,255,0.8);
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: var(--radius-full);
+        border: 3px solid white;
+    }
+
+    .status-indicator.online {
+        background: var(--success);
+        animation: pulse 2s infinite;
+    }
+
+    .welcome-text {
+        text-align: center;
     }
 
     .welcome-message {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--text-primary);
-        animation: slideIn 0.8s ease-out;
+        font-size: 3rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: var(--space-sm);
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.9);
+        margin: 0;
     }
 
     .wave-emoji {
-        font-size: 3.5rem;
-        animation: wave 2s infinite;
+        font-size: 4rem;
+        filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));
         transform-origin: 70% 70%;
     }
 
     .dashboard {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 var(--space-xl);
+    }
+
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--space-xl);
+        margin-bottom: var(--space-2xl);
+    }
+
+    .stat-card {
+        padding: var(--space-xl);
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+        background: var(--dark-surface);
+        border: 1px solid var(--dark-border);
+        transition: all var(--transition-normal);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-glow);
+        border-color: var(--primary-blue);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-gradient);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: var(--space-xs);
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
     }
 
     .actions-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 20px 0;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-xl);
+        margin-bottom: var(--space-2xl);
     }
 
     .action-card {
+        background: var(--dark-surface);
+        border: 1px solid var(--dark-border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all var(--transition-normal);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding: 30px;
-        background: var(--dark-surface);
-        border: 1px solid var(--secondary-blue);
-        border-radius: 12px;
-        color: var(--text-primary);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        gap: 15px;
+        text-align: center;
+        gap: var(--space-md);
     }
 
-    .action-card i {
-        font-size: 2rem;
+    .action-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform var(--transition-normal);
     }
 
-    .action-card span {
-        font-size: 1.1rem;
-        font-weight: 500;
+    .action-card:hover::before {
+        transform: scaleX(1);
     }
 
     .action-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(26,35,126,0.3);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--primary-blue);
     }
 
-    .action-card.danger {
-        background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+    .action-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--primary-gradient);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        transition: all var(--transition-normal);
+    }
+
+    .action-card:hover .action-icon {
+        transform: scale(1.1) rotate(10deg);
+    }
+
+    .action-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text-primary);
+    }
+
+    .action-description {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .action-arrow {
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all var(--transition-normal);
+        color: var(--primary-blue);
+    }
+
+    .action-card:hover .action-arrow {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
         border: none;
-        grid-column: 1 / -1;
-        max-width: 300px;
-        margin: 20px auto;
+        color: white;
     }
 
-    @keyframes slideIn {
-        from { 
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+    .btn-danger:hover {
+        box-shadow: 0 0 20px rgba(244, 67, 54, 0.4);
     }
 
-    @keyframes wave {
-        0% { transform: rotate(0deg); }
-        10% { transform: rotate(-10deg); }
-        20% { transform: rotate(12deg); }
-        30% { transform: rotate(-10deg); }
-        40% { transform: rotate(9deg); }
-        50% { transform: rotate(0deg); }
-        100% { transform: rotate(0deg); }
+    .quick-actions {
+        text-align: center;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: var(--space-xl);
+        color: var(--text-primary);
+    }
+
+    .quick-actions-grid {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-lg);
+        flex-wrap: wrap;
+    }
+
+    .quick-action-btn {
+        padding: var(--space-lg) var(--space-xl);
+        font-size: 1rem;
+        font-weight: 600;
     }
 
     @media (max-width: 768px) {
+        .welcome-content {
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
         .welcome-message {
-            font-size: 2rem;
+            font-size: 2.5rem;
         }
 
         .wave-emoji {
             font-size: 3rem;
         }
 
-        .action-card {
-            padding: 20px;
+        .dashboard {
+            padding: 0 var(--space-lg);
+        }
+
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions-grid {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quick-action-btn {
+            width: 100%;
+            max-width: 300px;
         }
     }
 </style>
 
 <script>
-    document.getElementById("exit-btn").addEventListener("click", () => {
-        displayInteractiveModal("Confirmación", "¿Estás seguro de que quieres salir?", {
-            className: "btn btn-secondary",
-            text: "Cancelar",
-            onclick: () => {
-                document.getElementById("interactive-modal-close").click();
-            }
-        }, {
-            className: "btn btn-danger",
-            text: "Confirmar",
-            onclick: () => {
-                document.getElementById("interactive-modal-close").click();
-                window.location.href = "/logout";
-            }
+    // Enhanced dashboard interactions
+    document.addEventListener('DOMContentLoaded', () => {
+        // Exit button functionality
+        document.getElementById("exit-btn").addEventListener("click", () => {
+            displayInteractiveModal("Confirmación", "¿Estás seguro de que quieres cerrar sesión?", {
+                className: "btn btn-secondary",
+                text: "Cancelar",
+                onclick: () => {
+                    document.getElementById("interactive-modal").style.display = 'none';
+                }
+            }, {
+                className: "btn btn-error",
+                text: "Cerrar Sesión",
+                onclick: () => {
+                    UIManager.showLoading();
+                    document.getElementById("interactive-modal").style.display = 'none';
+                    setTimeout(() => {
+                        window.location.href = "/logout";
+                    }, 1000);
+                }
+            });
+        });
+
+        // Add hover sound effects (if audio is available)
+        const actionCards = document.querySelectorAll('.action-card');
+        actionCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.animation = 'pulse 0.6s ease-out';
+            });
+
+            card.addEventListener('animationend', () => {
+                card.style.animation = '';
+            });
+        });
+
+        // Statistics counter animation
+        const statNumbers = document.querySelectorAll('.stat-number');
+        const animateCounters = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const finalValue = parseInt(target.textContent.replace(/,/g, ''));
+                    let currentValue = 0;
+                    const increment = finalValue / 50;
+                    const timer = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= finalValue) {
+                            currentValue = finalValue;
+                            clearInterval(timer);
+                        }
+                        target.textContent = Math.floor(currentValue).toLocaleString();
+                    }, 30);
+                    observer.unobserve(target);
+                }
+            });
+        };
+
+        const counterObserver = new IntersectionObserver(animateCounters, {
+            threshold: 0.5
+        });
+
+        statNumbers.forEach(stat => {
+            counterObserver.observe(stat);
         });
     });
 </script>

@@ -1,83 +1,231 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>{{ title }}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Modern CSS Framework -->
+    <link rel="stylesheet" href="/css/modern.css">
+    
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
-        :root {
-            --primary-blue: #1a237e;
-            --secondary-blue: #283593;
-            --dark-bg: #121212;
-            --dark-surface: #1e1e1e;
-            --text-primary: #ffffff;
-            --text-secondary: #b3b3b3;
-            --error-red: #cf6679;
-            --success-green: #4caf50;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Page-specific overrides and animations */
         body {
-            padding-top: 56px;
-            background-color: var(--dark-bg);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            padding-top: 70px;
+            overflow-x: hidden;
         }
 
-        /* Navbar styles */
+        /* Enhanced Navbar */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 56px;
-            background-color: var(--primary-blue);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            height: 70px;
+            background: var(--primary-gradient);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
             z-index: 1030;
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            justify-content: space-between;
+            padding: 0 var(--space-xl);
+            transition: all var(--transition-normal);
+        }
+
+        .navbar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--secondary-gradient);
         }
 
         .navbar-brand {
             color: var(--text-primary);
             text-decoration: none;
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            transition: all var(--transition-normal);
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        .navbar-brand::before {
+            content: '🏠';
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
         }
 
         .navbar-menu {
             display: flex;
             align-items: center;
-            margin-left: 20px;
+            list-style: none;
+            gap: var(--space-md);
         }
 
         .nav-item {
             list-style: none;
-            margin: 0 10px;
         }
 
         .nav-link {
             color: var(--text-primary);
             text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transition: left var(--transition-fast);
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
         }
 
         .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .nav-link.active {
-            background-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.2);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Enhanced Page Loading Animation */
+        body {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .page-container {
+            min-height: calc(100vh - 70px);
+            position: relative;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-text {
+            margin-top: var(--space-lg);
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: var(--space-xl);
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            transform: translateX(100%);
+            opacity: 0;
+            animation: slideInFromRight 0.3s ease forwards;
+        }
+
+        .toast.toast-success {
+            border-color: var(--success);
+        }
+
+        .toast.toast-error {
+            border-color: var(--error);
+        }
+
+        .toast.toast-warning {
+            border-color: var(--warning);
+        }
+
+        .toast.toast-info {
+            border-color: var(--info);
+        }
+
+        @keyframes slideInFromRight {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Page Transition Effects */
+        .page-transition {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: pageEnter 0.6s ease forwards;
+        }
+
+        @keyframes pageEnter {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Modal styles */
@@ -222,11 +370,44 @@
         .hidden {
             display: none !important;
         }
+    <!-- Responsive Design -->
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 0 var(--space-lg);
+        }
+        
+        .navbar-brand {
+            font-size: 1.3rem;
+        }
+        
+        .navbar-menu {
+            gap: var(--space-sm);
+        }
+        
+        .nav-link {
+            padding: var(--space-xs) var(--space-sm);
+            font-size: 0.9rem;
+        }
+        
+        .toast-container {
+            right: var(--space-md);
+            left: var(--space-md);
+            max-width: none;
+        }
+    }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
 
-<body>
+<body class="page-transition">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-lg"></div>
+        <div class="loading-text">Cargando...</div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>const ip = '{{ ip }}';</script>
     <script src="/socket.io/socket.io.js"></script>
     {{#if user}}
@@ -235,34 +416,45 @@
         socket.emit("set-id", "{{user.id}}");
     </script>
     {{/if}}
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
     {{#if user}}
     <nav class="navbar">
-        <a href="#" class="navbar-brand">Panel</a>
+        <a href="/dashboard" class="navbar-brand">Conguillio Panel</a>
         <ul class="navbar-menu">
             <li class="nav-item">
-                <a class="nav-link active" href="/dashboard">Inicio</a>
+                <a class="nav-link {{ #if (eq page 'dashboard') }}active{{ /if }}" href="/dashboard">
+                    <i class="fas fa-home"></i> Inicio
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/dashboard/profile">Perfil</a>
+                <a class="nav-link {{ #if (eq page 'profile') }}active{{ /if }}" href="/dashboard/profile">
+                    <i class="fas fa-user"></i> Perfil
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/dashboard/users">Usuarios</a>
+                <a class="nav-link {{ #if (eq page 'users') }}active{{ /if }}" href="/dashboard/users">
+                    <i class="fas fa-users"></i> Usuarios
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/dashboard/trash/add">Registro de basura</a>
+                <a class="nav-link {{ #if (eq page 'messages') }}active{{ /if }}" href="/dashboard/messages">
+                    <i class="fas fa-comments"></i> Mensajes
+                </a>
             </li>
         </ul>
     </nav>
     {{/if}}
 
-    <!-- Modal básico -->
+    <main class="page-container">
+        {{{ body }}}
+    </main>
+
+    <!-- Enhanced Modern Modals -->
     <div class="modal-overlay" id="basic-modal">
         <div class="modal">
             <div class="modal-header">
                 <h5 class="modal-title" id="basic-modal-title"></h5>
-                <button class="modal-close">&times;</button>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <p id="basic-modal-message"></p>
@@ -273,12 +465,12 @@
         </div>
     </div>
 
-    <!-- Modal interactivo -->
+    <!-- Interactive Modal -->
     <div class="modal-overlay" id="interactive-modal">
         <div class="modal">
             <div class="modal-header">
                 <h5 class="modal-title" id="interactive-modal-title"></h5>
-                <button class="modal-close" id="interactive-modal-close">&times;</button>
+                <button class="modal-close" id="interactive-modal-close"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <p id="interactive-modal-message"></p>
@@ -289,7 +481,56 @@
     </div>
 
     <script>
-        // Nueva implementación de modales sin Bootstrap
+        // Enhanced Modern UI Utilities
+        class UIManager {
+            static showLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.classList.add('show');
+            }
+            
+            static hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.classList.remove('show');
+            }
+            
+            static showToast(message, type = 'info', duration = 5000) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                
+                const icon = this.getToastIcon(type);
+                toast.innerHTML = `
+                    <i class="${icon}"></i>
+                    <span>${message}</span>
+                    <button class="btn btn-sm" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                container.appendChild(toast);
+                
+                if (duration > 0) {
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.style.animation = 'slideOutToRight 0.3s ease forwards';
+                            setTimeout(() => toast.remove(), 300);
+                        }
+                    }, duration);
+                }
+            }
+            
+            static getToastIcon(type) {
+                const icons = {
+                    success: 'fas fa-check-circle',
+                    error: 'fas fa-exclamation-triangle',
+                    warning: 'fas fa-exclamation-circle',
+                    info: 'fas fa-info-circle'
+                };
+                return icons[type] || icons.info;
+            }
+        }
+
+        // Enhanced Modal Functions
         function displayModal(title, message) {
             const modal = document.getElementById('basic-modal');
             const titleEl = document.getElementById('basic-modal-title');
@@ -359,24 +600,44 @@
             });
         }
 
-        // Cerrar modales al hacer clic fuera
+        // Close modals when clicking outside
         window.onclick = function(event) {
             if (event.target.classList.contains('modal-overlay')) {
                 event.target.style.display = 'none';
             }
         }
+
+        // Hide loading on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => UIManager.hideLoading(), 500);
+        });
+
+        // Add animations to new content
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { // Element node
+                        node.style.animation = 'fadeIn 0.3s ease-out forwards';
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
     </script>
 
     <script src="/js/utils.js"></script>
     <script>utils.askForNotificationPermission();</script>
     <script src="/js/index.js"></script>
     <script src="/js/WebSocketManager.js"></script>
+    {{#if user}}
     <script>ws.sendData("set-user-id", ["{{user.id}}"]);</script>
+    {{/if}}
 
     {{#if error}}
     <script id="error-script">
         $(document).ready(function() {
-            displayModal('Error', '{{ error }}');
+            UIManager.showToast('{{ error }}', 'error');
             $("#error-script").remove();
         });
     </script>
@@ -385,15 +646,13 @@
     {{#if success}}
     <script id="success-script">
         $(document).ready(function() {
-            displayModal('Success', '{{ success }}');
+            UIManager.showToast('{{ success }}', 'success');
             $("#success-script").remove();
         });
     </script>
     {{/if}}
 
-    {{{ body }}}
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>
