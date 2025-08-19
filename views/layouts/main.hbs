@@ -659,19 +659,41 @@
 
     {{#if error}}
     <script id="error-script">
-        $(document).ready(function() {
-            UIManager.showToast('{{ error }}', 'error');
-            $("#error-script").remove();
-        });
+        if (typeof $ !== 'undefined') {
+            $(document).ready(function() {
+                UIManager.showToast('{{ error }}', 'error');
+                $("#error-script").remove();
+            });
+        } else {
+            // Fallback when jQuery is not available
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof UIManager !== 'undefined') {
+                    UIManager.showToast('{{ error }}', 'error');
+                }
+                const script = document.getElementById('error-script');
+                if (script) script.remove();
+            });
+        }
     </script>
     {{/if}}
 
     {{#if success}}
     <script id="success-script">
-        $(document).ready(function() {
-            UIManager.showToast('{{ success }}', 'success');
-            $("#success-script").remove();
-        });
+        if (typeof $ !== 'undefined') {
+            $(document).ready(function() {
+                UIManager.showToast('{{ success }}', 'success');
+                $("#success-script").remove();
+            });
+        } else {
+            // Fallback when jQuery is not available
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof UIManager !== 'undefined') {
+                    UIManager.showToast('{{ success }}', 'success');
+                }
+                const script = document.getElementById('success-script');
+                if (script) script.remove();
+            });
+        }
     </script>
     {{/if}}
 
