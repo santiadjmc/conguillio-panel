@@ -45,8 +45,14 @@ const utils = {
             // Fail silently - audio autoplay might be blocked
         });
         
-        audio.onended = () => audio.remove();
-        audio.onerror = () => audio.remove();
+        audio.onended = () => {
+            audio.pause();
+            audio.src = '';
+        };
+        audio.onerror = () => {
+            audio.pause();
+            audio.src = '';
+        };
     },
     
     // Text utilities

@@ -242,7 +242,7 @@
             
             particles.forEach((particle, index) => {
                 const speed = (index + 1) * 0.5;
-                particle.style.transform += ` translate(${x * speed}px, ${y * speed}px)`;
+                particle.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
             });
         });
     });
