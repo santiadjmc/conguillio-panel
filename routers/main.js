@@ -167,7 +167,7 @@ router.post("/dashboard/users/:id/edit", onlyAuth, (req, res, next) => validateU
 router.get("/dashboard/users/:id/messages", onlyAuth, async (req, res, next) => {
     const id = Number(req.params.id);
     const user = await db.query(`SELECT * FROM users WHERE id = ?`, [id]);
-    if (!user[0]) {
+    if (!user[0] && id !== 0) {
         return next();
     }
     

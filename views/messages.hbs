@@ -827,6 +827,25 @@
         }
     }
 
+    // Ensure messages container exists (handles empty threads gracefully)
+    function getOrCreateMessagesContainer() {
+        let container = document.querySelector('.messages-container');
+        if (!container) {
+            // Remove empty state if present
+            const noMessages = document.querySelector('.no-messages');
+            if (noMessages) noMessages.remove();
+
+            // Create a new messages container inside the chat messages area
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                container = document.createElement('div');
+                container.className = 'messages-container';
+                chatMessages.appendChild(container);
+            }
+        }
+        return container;
+    }
+
     // Enhanced typing indicator
     function updateAiTyping(status) {
         const typingContainer = document.getElementById('typing-container');
@@ -869,7 +888,12 @@
             </div>
         `;
         
-        document.querySelector('.messages-container').insertAdjacentHTML('beforeend', messageHtml);
+        const container = getOrCreateMessagesContainer();
+        if (!container) {
+            console.error('No messages container available to insert message.');
+            return;
+        }
+        container.insertAdjacentHTML('beforeend', messageHtml);
         scrollToBottom();
         
         try {
@@ -988,7 +1012,10 @@
                         </div>
                     `;
                     
-                    document.querySelector('.messages-container').insertAdjacentHTML('beforeend', messageHtml);
+                    const container = getOrCreateMessagesContainer();
+                    if (container) {
+                        container.insertAdjacentHTML('beforeend', messageHtml);
+                    }
                     scrollToBottom();
                     
                     if (!focused) {
