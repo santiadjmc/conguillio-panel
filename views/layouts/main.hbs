@@ -6,408 +6,18 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>{{ title }}</title>
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Modern CSS Framework -->
-    <link rel="stylesheet" href="/css/modern.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
     
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <style>
-        /* Page-specific overrides and animations */
-        body {
-            padding-top: 70px;
-            overflow-x: hidden;
-        }
-
-        /* Enhanced Navbar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: var(--primary-gradient);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-lg);
-            z-index: 1030;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 var(--space-xl);
-            transition: all var(--transition-normal);
-        }
-
-        .navbar::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--secondary-gradient);
-        }
-
-        .navbar-brand {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            transition: all var(--transition-normal);
-        }
-
-        .navbar-brand:hover {
-            transform: scale(1.05);
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
-        }
-
-        .navbar-brand::before {
-            content: '🏠';
-            font-size: 1.2em;
-            animation: pulse 2s infinite;
-        }
-
-        .navbar-menu {
-            display: flex;
-            align-items: center;
-            list-style: none;
-            gap: var(--space-md);
-        }
-
-        .nav-item {
-            list-style: none;
-        }
-
-        .nav-link {
-            color: var(--text-primary);
-            text-decoration: none;
-            padding: var(--space-sm) var(--space-lg);
-            border-radius: var(--radius-full);
-            font-weight: 500;
-            transition: all var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.1);
-            transition: left var(--transition-fast);
-        }
-
-        .nav-link:hover::before {
-            left: 100%;
-        }
-
-        .nav-link:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .nav-link.active {
-            background: rgba(255,255,255,0.2);
-            box-shadow: var(--shadow-glow);
-        }
-
-        /* Enhanced Page Loading Animation */
-        body {
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        .page-container {
-            min-height: calc(100vh - 70px);
-            position: relative;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--dark-bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all var(--transition-normal);
-        }
-
-        .loading-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .loading-text {
-            margin-top: var(--space-lg);
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            animation: pulse 1.5s infinite;
-        }
-
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            top: 90px;
-            right: var(--space-xl);
-            z-index: 9999;
-            max-width: 400px;
-        }
-
-        .toast {
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            margin-bottom: var(--space-md);
-            box-shadow: var(--shadow-xl);
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            transform: translateX(100%);
-            opacity: 0;
-            animation: slideInFromRight 0.3s ease forwards;
-        }
-
-        .toast.toast-success {
-            border-color: var(--success);
-        }
-
-        .toast.toast-error {
-            border-color: var(--error);
-        }
-
-        .toast.toast-warning {
-            border-color: var(--warning);
-        }
-
-        .toast.toast-info {
-            border-color: var(--info);
-        }
-
-        @keyframes slideInFromRight {
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Page Transition Effects */
-        .page-transition {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: pageEnter 0.6s ease forwards;
-        }
-
-        @keyframes pageEnter {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Modal styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal {
-            background-color: var(--dark-surface);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            animation: modalSlide 0.3s ease;
-        }
-
-        @keyframes modalSlide {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--secondary-blue);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            color: var(--text-primary);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.5rem;
-            padding: 4px;
-            transition: color 0.2s ease;
-        }
-
-        .modal-close:hover {
-            color: var(--text-primary);
-        }
-
-        .modal-body {
-            padding: 16px;
-        }
-
-        .modal-footer {
-            padding: 16px;
-            border-top: 1px solid var(--secondary-blue);
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        /* Button styles */
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: var (--text-primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-blue);
-        }
-
-        .btn-secondary {
-            background-color: var(--dark-surface);
-            color: var(--text-primary);
-            border: 1px solid var(--secondary-blue);
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(26,35,126,0.2);
-        }
-
-        /* Form styles */
-        input, textarea, select {
-            background-color: var(--dark-surface);
-            border: 1px solid var(--secondary-blue);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            width: 100%;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 2px rgba(26,35,126,0.25);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--dark-bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--secondary-blue);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-blue);
-        }
-
-        /* Utility classes */
-        .hidden {
-            display: none !important;
-        }
-    <!-- Responsive Design -->
-    @media (max-width: 768px) {
-        .navbar {
-            padding: 0 var(--space-lg);
-        }
-        
-        .navbar-brand {
-            font-size: 1.3rem;
-        }
-        
-        .navbar-menu {
-            gap: var(--space-sm);
-        }
-        
-        .nav-link {
-            padding: var(--space-xs) var(--space-sm);
-            font-size: 0.9rem;
-        }
-        
-        .toast-container {
-            right: var(--space-md);
-            left: var(--space-md);
-            max-width: none;
-        }
-    }
-    </style>
 </head>
 
-<body class="page-transition">
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner-lg"></div>
-        <div class="loading-text">Cargando...</div>
-    </div>
-    
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
+<body>
+    <!-- Socket.io setup -->
     <script>const ip = '{{ ip }}';</script>
     <script src="/socket.io/socket.io.js"></script>
     {{#if user}}
@@ -417,60 +27,60 @@
     </script>
     {{/if}}
 
+    <!-- Navigation -->
     {{#if user}}
     <nav class="navbar">
-        <a href="/dashboard" class="navbar-brand">Conguillio Panel</a>
-        <ul class="navbar-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="/dashboard">
-                    <i class="fas fa-home"></i> Inicio
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/dashboard/profile">
-                    <i class="fas fa-user"></i> Perfil
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/dashboard/users">
-                    <i class="fas fa-users"></i> Usuarios
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/dashboard/messages">
-                    <i class="fas fa-comments"></i> Mensajes
-                </a>
-            </li>
-        </ul>
+        <div class="navbar-container">
+            <a href="/dashboard" class="navbar-brand">
+                <i class="fas fa-home"></i>
+                Conguillio Panel
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="/dashboard" class="nav-link"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="/dashboard/profile" class="nav-link"><i class="fas fa-user"></i> Perfil</a></li>
+                <li><a href="/dashboard/users" class="nav-link"><i class="fas fa-users"></i> Usuarios</a></li>
+                <li><a href="/dashboard/messages" class="nav-link"><i class="fas fa-comments"></i> Mensajes</a></li>
+            </ul>
+        </div>
     </nav>
     {{/if}}
 
-    <main class="page-container">
+    <!-- Main Content -->
+    <main class="main-content">
         {{{ body }}}
     </main>
 
-    <!-- Enhanced Modern Modals -->
-    <div class="modal-overlay" id="basic-modal">
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
+
+    <!-- Basic Modal -->
+    <div id="basic-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h5 class="modal-title" id="basic-modal-title"></h5>
-                <button class="modal-close"><i class="fas fa-times"></i></button>
+                <h5 id="basic-modal-title"></h5>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <p id="basic-modal-message"></p>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary modal-close">OK</button>
+                <button class="btn btn-primary modal-close">OK</button>
             </div>
         </div>
     </div>
 
     <!-- Interactive Modal -->
-    <div class="modal-overlay" id="interactive-modal">
+    <div id="interactive-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h5 class="modal-title" id="interactive-modal-title"></h5>
-                <button class="modal-close" id="interactive-modal-close"><i class="fas fa-times"></i></button>
+                <h5 id="interactive-modal-title"></h5>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
                 <p id="interactive-modal-message"></p>
@@ -480,223 +90,29 @@
         </div>
     </div>
 
-    <script>
-        // Enhanced Modern UI Utilities
-        class UIManager {
-            static showLoading() {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) {
-                    overlay.classList.add('show');
-                }
-            }
-            
-            static hideLoading() {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) {
-                    overlay.classList.remove('show');
-                }
-            }
-            
-            static showToast(message, type = 'info', duration = 5000) {
-                const container = document.getElementById('toastContainer');
-                if (!container) {
-                    console.warn('Toast container not found');
-                    return;
-                }
-                
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                
-                const icon = this.getToastIcon(type);
-                toast.innerHTML = `
-                    <i class="${icon}"></i>
-                    <span>${message}</span>
-                    <button class="btn btn-sm" onclick="this.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                
-                container.appendChild(toast);
-                
-                if (duration > 0) {
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.style.animation = 'slideOutToRight 0.3s ease forwards';
-                            setTimeout(() => toast.remove(), 300);
-                        }
-                    }, duration);
-                }
-            }
-            
-            static getToastIcon(type) {
-                const icons = {
-                    success: 'fas fa-check-circle',
-                    error: 'fas fa-exclamation-triangle',
-                    warning: 'fas fa-exclamation-circle',
-                    info: 'fas fa-info-circle'
-                };
-                return icons[type] || icons.info;
-            }
-        }
-
-        // Enhanced Modal Functions
-        function displayModal(title, message) {
-            const modal = document.getElementById('basic-modal');
-            const titleEl = document.getElementById('basic-modal-title');
-            const messageEl = document.getElementById('basic-modal-message');
-            
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-            modal.style.display = 'flex';
-
-            const closeButtons = modal.querySelectorAll('.modal-close');
-            closeButtons.forEach(btn => {
-                btn.onclick = () => modal.style.display = 'none';
-            });
-        }
-
-        function displayInteractiveModal(title, message, ...buttons) {
-            const modal = document.getElementById('interactive-modal');
-            const titleEl = document.getElementById('interactive-modal-title');
-            const messageEl = document.getElementById('interactive-modal-message');
-            const footer = document.getElementById('interactive-modal-footer');
-            
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-            footer.innerHTML = '';
-            
-            if (buttons.length < 1) {
-                const btn = document.createElement('button');
-                btn.className = 'btn btn-secondary';
-                btn.textContent = 'OK';
-                btn.onclick = () => modal.style.display = 'none';
-                footer.appendChild(btn);
-            } else {
-                buttons.forEach(button => {
-                    const btn = document.createElement('button');
-                    btn.className = button.className || 'btn btn-secondary';
-                    btn.textContent = button.text || 'OK';
-                    btn.onclick = button.onclick || function() {
-                        modal.style.display = 'none';
-                    };
-                    footer.appendChild(btn);
-                });
-            }
-
-            modal.style.display = 'flex';
-
-            const closeButtons = modal.querySelectorAll('.modal-close');
-            closeButtons.forEach(btn => {
-                btn.onclick = () => modal.style.display = 'none';
-            });
-        }
-
-        function convertFileToBuffer(inputFileValue) {
-            return new Promise((resolve, reject) => {
-                const file = inputFileValue.files[0];
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(file);
-                reader.onload = function(event) {
-                    let buffer = event.target.result;
-                    let base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => {
-                        return data + String.fromCharCode(byte);
-                    }, ''));
-                    resolve({ base64, buffer });
-                };
-                reader.onerror = function(event) {
-                    reject("File could not be read! Code " + event.target.error.code);
-                };
-            });
-        }
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // Hide loading on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => UIManager.hideLoading(), 500);
-        });
-
-        // Add animations to new content
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1) { // Element node
-                        node.style.animation = 'fadeIn 0.3s ease-out forwards';
-                    }
-                });
-            });
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
-    </script>
-
+    <!-- JavaScript -->
+    <script src="/js/ui.js"></script>
     <script src="/js/utils.js"></script>
-    <script>utils.askForNotificationPermission();</script>
-    <script src="/js/index.js"></script>
-    <script src="/js/WebSocketManager.js"></script>
-    {{#if user}}
-    <script>
-        // Ensure WebSocket is ready before sending data
-        if (typeof ws !== 'undefined' && ws.connected) {
-            ws.sendData("set-user-id", ["{{user.id}}"]);
-        } else {
-            // Wait for WebSocket to be ready
-            setTimeout(() => {
-                if (typeof ws !== 'undefined') {
-                    ws.sendData("set-user-id", ["{{user.id}}"]);
-                } else {
-                    console.warn('WebSocket manager not available');
-                }
-            }, 1000);
-        }
-    </script>
-    {{/if}}
+    <script src="/js/app.js"></script>
 
+    <!-- Flash Messages -->
     {{#if error}}
-    <script id="error-script">
-        if (typeof $ !== 'undefined') {
-            $(document).ready(function() {
-                UIManager.showToast('{{ error }}', 'error');
-                $("#error-script").remove();
-            });
-        } else {
-            // Fallback when jQuery is not available
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof UIManager !== 'undefined') {
-                    UIManager.showToast('{{ error }}', 'error');
-                }
-                const script = document.getElementById('error-script');
-                if (script) script.remove();
-            });
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            UI.showToast('{{ error }}', 'error');
+        });
     </script>
     {{/if}}
 
     {{#if success}}
-    <script id="success-script">
-        if (typeof $ !== 'undefined') {
-            $(document).ready(function() {
-                UIManager.showToast('{{ success }}', 'success');
-                $("#success-script").remove();
-            });
-        } else {
-            // Fallback when jQuery is not available
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof UIManager !== 'undefined') {
-                    UIManager.showToast('{{ success }}', 'success');
-                }
-                const script = document.getElementById('success-script');
-                if (script) script.remove();
-            });
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            UI.showToast('{{ success }}', 'success');
+        });
     </script>
     {{/if}}
 
+    <!-- Highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
         if (typeof hljs !== 'undefined') {

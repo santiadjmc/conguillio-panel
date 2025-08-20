@@ -1,59 +1,39 @@
-/**
- * Client side utilities - Optimized and cleaned
- */
+// Utilities - Simple and Clean
 const utils = {
-    // Window and Document utilities
+    // Notification system
+    askForNotificationPermission: () => {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    UI.showToast('Permisos de notificación concedidos', 'success');
+                }
+            });
+        }
+    },
+    
+    displayNotification: (title, body, onclick, icon) => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification(title, {
+                body: body,
+                icon: icon || '/img/notification_icon.png',
+            });
+            
+            notification.onclick = onclick || (() => {
+                window.focus();
+                notification.close();
+            });
+            
+            notification.onerror = () => {
+                notification.close();
+                UI.showToast('Error al mostrar notificación', 'error');
+            };
+        }
+    },
+    
+    // Window utilities
     windowFocused: () => document.hasFocus(),
     currentPath: () => window.location.pathname,
     changeTitle: title => document.title = title,
-    
-    // Notification system
-    displayNotification: (title, body, onclick, avatar) => {
-        if (Notification.permission !== "granted") return;
-        
-        const notification = new Notification(title, {
-            body,
-            icon: avatar || "/img/notification_icon.png",
-        });
-        
-        notification.onclick = onclick || (() => {
-            window.focus();
-            notification.close();
-        });
-        
-        notification.onerror = () => {
-            notification.close();
-            UIManager.showToast("Error al mostrar notificación", "error");
-        };
-    },
-    
-    askForNotificationPermission: () => {
-        if (Notification.permission === "granted") return;
-        
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                utils.displayNotification("Permisos concedidos", "Ahora puedes recibir notificaciones");
-            }
-        });
-    },
-    
-    // Audio utilities
-    playSound: url => {
-        const audio = new Audio(url);
-        audio.volume = 0.5; // Reasonable volume
-        audio.play().catch(() => {
-            // Fail silently - audio autoplay might be blocked
-        });
-        
-        audio.onended = () => {
-            audio.pause();
-            audio.src = '';
-        };
-        audio.onerror = () => {
-            audio.pause();
-            audio.src = '';
-        };
-    },
     
     // Text utilities
     removeXSS: str => str.replace(/<[^>]*>/g, ''),
@@ -63,10 +43,32 @@ const utils = {
         return fields.every(field => field && field.trim() !== '');
     },
     
-    // Promise-based utilities
+    // Audio utilities
+    playSound: url => {
+        try {
+            const audio = new Audio(url);
+            audio.volume = 0.5;
+            audio.play().catch(() => {
+                // Fail silently - audio autoplay might be blocked
+            });
+            
+            audio.onended = () => {
+                audio.pause();
+                audio.src = '';
+            };
+            audio.onerror = () => {
+                audio.pause();
+                audio.src = '';
+            };
+        } catch (error) {
+            console.warn('Audio playback failed:', error);
+        }
+    },
+    
+    // Promise utilities
     wait: time => new Promise(resolve => setTimeout(resolve, time)),
     
-    // Socket-based utilities (if socket is available)
+    // Socket utilities (if socket is available)
     parseMD: (text) => {
         if (typeof socket === 'undefined') return Promise.resolve(text);
         
@@ -112,25 +114,38 @@ const utils = {
     // Voice input (fallback gracefully if not supported)
     getVoiceInput: () => {
         return new Promise((resolve, reject) => {
-            if (!('webkitSpeechRecognition' in window)) {
-                reject(new Error('Speech recognition not supported'));
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                reject('Speech recognition not supported');
                 return;
             }
             
-            const recognition = new webkitSpeechRecognition();
-            recognition.lang = "es-ES";
-            recognition.continuous = false;
-            recognition.interimResults = false;
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
             
-            recognition.onresult = event => {
-                resolve(event.results[0][0].transcript);
+            recognition.lang = 'es-ES';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
+            recognition.onresult = (event) => {
+                const result = event.results[0][0].transcript;
+                resolve(result);
             };
             
-            recognition.onerror = event => {
-                reject(new Error('Speech recognition error: ' + event.error));
+            recognition.onerror = (event) => {
+                reject(event.error);
             };
             
             recognition.start();
         });
     }
 };
+
+// Auto-request notification permission on load
+document.addEventListener('DOMContentLoaded', () => {
+    utils.askForNotificationPermission();
+});
+
+// Export for module use
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = utils;
+}
